@@ -19,10 +19,45 @@ namespace WebDaD.Toolkit.Export
 
         private DataTable table;
         public DataTable Table { get { return table; } set { table = value; } }
+        public int MaxColLength
+        {
+            get
+            {
+                int max = 0;
+                foreach (DataRow r in this.table.Rows)
+                {
+                    foreach (object item in r.ItemArray)
+                    {
+                        if (item.ToString().Length > max) max = item.ToString().Length;
+                    }
+                }
+                return max;
+            }
+        }
+        public int TableWidth
+        {
+            get
+            {
+                int max = 0;
+                foreach (DataRow r in this.table.Rows)
+                {
+                    int tmp = 0;
+                    foreach (object item in r.ItemArray)
+                    {
+                        tmp += item.ToString().Length;
+                    }
+                    if (tmp > max) max = tmp;
+                }
+                return max;
+            }
+        }
+
 
         public Content(DataType type)
         {
             this.type = type;
         }
+
+        public static readonly string EMPTY = "%EMPTY%";
     }
 }

@@ -10,7 +10,6 @@ namespace WebDaD.Toolkit.Export
     public static class Export
     {
         private static readonly string TAB = "\t";
-        private static readonly int TABLENGTH = 3;
         /// <summary>
         /// Exports the Data given
         /// </summary>
@@ -90,19 +89,19 @@ namespace WebDaD.Toolkit.Export
                 switch (content.Type)
                 {
                     case DataType.Table:
-                        int col_length = 0;
                         foreach (DataColumn col in content.Table.Columns)
                         {
                             file.Write(col.Caption + TAB);
-                            col_length += col.Caption.Length + TABLENGTH; //TODO: correctly guess length of this
                         }
                         file.WriteLine("");
-                        file.WriteLine(new String('-', col_length));
+                        file.WriteLine(new String('-', content.TableWidth));
                         foreach (DataRow row in content.Table.Rows)
                         {
                             string r = String.Join(TAB, row.ItemArray);
+                            r.Replace(Content.EMPTY, TAB);
                             file.WriteLine(r);
                         }
+                        file.WriteLine(new String('-', content.TableWidth));
                         break;
                     case DataType.Paragraphs:
                         foreach (KeyValuePair<string,string> item in content.Paragraphs)
