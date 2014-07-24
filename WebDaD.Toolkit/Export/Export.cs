@@ -80,12 +80,18 @@ namespace WebDaD.Toolkit.Export
             path += ".txt";
             using (StreamWriter file = new StreamWriter(path))
             {
-                file.WriteLine(template.Header_Left + TAB + TAB + template.Header_Center + TAB + TAB + template.Header_Right);
-                file.WriteLine("");
+                if (!template.IsEmpty)
+                {
+                    file.WriteLine(template.Header_Left + TAB + TAB + template.Header_Center + TAB + TAB + template.Header_Right);
+                    file.WriteLine("");
+                }
                 file.WriteLine(title);
                 file.WriteLine("");
-                file.WriteLine(template.BeforeContent);
-                file.WriteLine("");
+                if (!template.IsEmpty)
+                {
+                    file.WriteLine(template.BeforeContent);
+                    file.WriteLine("");
+                }
                 switch (content.Type)
                 {
                     case DataType.Table:
@@ -117,11 +123,13 @@ namespace WebDaD.Toolkit.Export
                     default:
                         break;
                 }
-
-                file.WriteLine("");
-                file.WriteLine(template.AfterContent);
-                file.WriteLine("");
-                file.WriteLine(template.Footer_Left + "\t\t" + template.Footer_Center + "\t\t" + template.Footer_Right);
+                if (!template.IsEmpty)
+                {
+                    file.WriteLine("");
+                    file.WriteLine(template.AfterContent);
+                    file.WriteLine("");
+                    file.WriteLine(template.Footer_Left + "\t\t" + template.Footer_Center + "\t\t" + template.Footer_Right);
+                }
             }
             return path;
         }

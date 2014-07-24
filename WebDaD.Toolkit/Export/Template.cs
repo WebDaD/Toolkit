@@ -13,6 +13,9 @@ namespace WebDaD.Toolkit.Export
             d = db.getRow(Template.table, new string[] { "id", "name" });
 
             Dictionary<string, string> r = new Dictionary<string, string>();
+
+            r.Add("0", "Keines");
+
             foreach (List<string> item in d)
             {
                 r.Add(item[0], item[1]);
@@ -128,6 +131,8 @@ namespace WebDaD.Toolkit.Export
             }
         }
 
+        private bool empty;
+
         public Template(WebDaD.Toolkit.Database.Database db, string id)
         {
             this.db = db;
@@ -139,6 +144,7 @@ namespace WebDaD.Toolkit.Export
             this.afterContent = d[0][3];
             this.header = d[0][4];
             this.footer = d[0][5];
+            this.empty = false;
         }
 
         public Template(WebDaD.Toolkit.Database.Database db)
@@ -149,7 +155,20 @@ namespace WebDaD.Toolkit.Export
             this.afterContent = "";
             this.header = " | | ";
             this.footer = " | | ";
+            this.empty = true;
         }
+
+        public Template()
+        {
+            this.name = "";
+            this.beforeContent = "";
+            this.afterContent = "";
+            this.header = "";
+            this.footer = "";
+            this.empty = true;
+        }
+
+        public bool IsEmpty { get { return this.empty; } }
 
         public bool Save()
         {
