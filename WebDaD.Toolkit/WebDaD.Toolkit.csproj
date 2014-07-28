@@ -83,6 +83,7 @@
     <Compile Include="Database\Database.cs" />
     <Compile Include="Database\DatabaseType.cs" />
     <Compile Include="Database\SQLite.cs" />
+    <Compile Include="Database\Joinable.cs" />
     <Compile Include="Export\Content.cs" />
     <Compile Include="Export\DataType.cs" />
     <Compile Include="Export\Export.cs" />
