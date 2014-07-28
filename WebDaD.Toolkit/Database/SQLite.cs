@@ -13,6 +13,11 @@ namespace WebDaD.Toolkit.Database
         private SQLiteConnection connection;
         private SQLiteCommand cmd;
 
+        public static String GetConnectionString(string datasource)
+        {
+            return "Data Source=" + datasource;
+        }
+
         public static Database_SQLite getDatabase(string datasource)
         {
             return new Database_SQLite(datasource);
