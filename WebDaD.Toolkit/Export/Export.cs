@@ -95,22 +95,24 @@ namespace WebDaD.Toolkit.Export
                 switch (content.Type)
                 {
                     case DataType.Table:
-                        foreach (DataColumn col in content.Table.Columns)
+                        ContentTable c = (ContentTable)content as ContentTable;
+                        foreach (DataColumn col in c.Table.Columns)
                         {
                             file.Write(col.Caption + TAB);
                         }
                         file.WriteLine("");
-                        file.WriteLine(new String('-', content.TableWidth));
-                        foreach (DataRow row in content.Table.Rows)
+                        file.WriteLine(new String('-', c.TableWidth));
+                        foreach (DataRow row in c.Table.Rows)
                         {
                             string r = String.Join(TAB, row.ItemArray);
                             r.Replace(Content.EMPTY, TAB);
                             file.WriteLine(r);
                         }
-                        file.WriteLine(new String('-', content.TableWidth));
+                        file.WriteLine(new String('-', c.TableWidth));
                         break;
                     case DataType.Paragraphs:
-                        foreach (KeyValuePair<string,string> item in content.Paragraphs)
+                        ContentParagraphs p = (ContentParagraphs)content as ContentParagraphs;
+                        foreach (KeyValuePair<string,string> item in p.Paragraphs)
                         {
                             file.WriteLine(item.Key);
                             file.WriteLine(item.Value);
@@ -118,7 +120,8 @@ namespace WebDaD.Toolkit.Export
                         }
                         break;
                     case DataType.Text:
-                        file.WriteLine(content.Text);
+                        ContentText t = (ContentText)content as ContentText;
+                        file.WriteLine(t.Text);
                         break;
                     default:
                         break;
