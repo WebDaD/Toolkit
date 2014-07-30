@@ -310,10 +310,76 @@ namespace WebDaD.Toolkit.Database
             return r;
         }
 
+        /// <summary>
+        /// Get a Join on TWO tables.
+        /// </summary>
+        /// <param name="tables"></param>
+        /// <param name="c"></param>
+        /// <param name="g"></param>
+        /// <param name="o"></param>
+        /// <returns></returns>
         public Result Join(Joinable[] tables, Condition[] c, GroupBy g, OrderBy[] o)
         {
-            //TODO: this is a complicated thing.
-            throw new NotImplementedException();
+            string sql = "SELECT ";
+            List<string> fields = new List<string>();
+            foreach (Joinable j in tables)
+            {
+                sql += String.Join(",", j.GetFields()) + ", ";
+                foreach (string item in j.GetFields())
+                {
+                    fields.Add(item);
+                }
+            }
+            sql = sql.Remove(sql.Length - 2);
+            sql += " FROM ";
+            foreach (Joinable j in tables)
+            {
+                sql += j.GetTableName() + ", ";
+            }
+            sql = sql.Remove(sql.Length - 2);
+            sql += " WHERE (";
+            sql += tables[0].GetJoinOn(tables[1]) + "=" + tables[1].GetJoinOn(tables[0]); //TODO: make this work for more tables...
+            sql += ") ";
+            if (c != null)
+            {
+                sql += " AND (";
+                foreach (Condition item in c)
+                {
+                    sql += item.ToString() + " AND ";
+                }
+                sql = sql.Remove(sql.Length - 5);
+                sql += ") ";
+            }
+            if (g != null)
+            {
+                sql += g.ToString();
+            }
+            if (o != null)
+            {
+                sql += " ORDER BY ";
+                foreach (OrderBy item in o)
+                {
+                    sql += item.ToShortString() + ", ";
+                }
+                sql = sql.Remove(sql.Length - 2);
+            }
+            this.cmd.CommandText = sql;
+            Result r = new Result(this.cmd.CommandText);
+            if (this.connection.State != System.Data.ConnectionState.Open) this.connection.Open();
+            SQLiteDataReader re = this.cmd.ExecuteReader();
+            while (re.Read())
+            {
+                Row row = new Row(re.StepCount);
+
+                foreach (string f in fields)
+                {
+                    row.AddCell(f, re[f].ToString());
+                }
+
+                r.AddRow(row);
+            }
+            re.Close();
+            return r;
         }
     }
 }
