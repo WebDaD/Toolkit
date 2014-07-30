@@ -166,14 +166,20 @@ namespace WebDaD.Toolkit.Database
             string[] sf = fieldset.Split(',');
             foreach (string item in sf)
             {
+                string adder = "";
                 if (item.ToLower().Contains(" as "))
                 {
-                    fields.Add(item.ToLower().Split(new string[] { " as " }, StringSplitOptions.None)[1].Trim()); 
+                    adder = item.ToLower().Split(new string[] { " as " }, StringSplitOptions.None)[1].Trim();
                 }
                 else
                 {
-                    fields.Add(item.Trim());
+                    adder = item.Trim();
                 }
+                if (adder.Contains('.'))
+                {
+                    adder = adder.Split('.')[1];
+                }
+                fields.Add(adder);
             }
 
             this.cmd.CommandText = sql;
