@@ -7,7 +7,8 @@ namespace WebDaD.Toolkit.Database
 {
     public interface Joinable
     {
-        string JoinOn(Joinable jointable);
+        string GetJoinOn(Joinable jointable);
         string GetTableName();
+        List<string> GetFields();
     }
 }

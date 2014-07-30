@@ -80,38 +80,40 @@ namespace WebDaD.Toolkit.Database
             return r;
         }
 
-        public List<List<string>> getRow(string table,string[] fields, string filter="",string orderby="", int limit=0)
+        public Result getRow(string table, string[] fields, string filter = "", string orderby = "", int limit = 0)
         {
-            List<List<string>> r = new List<List<string>>();
-            
-            this.cmd.CommandText = "SELECT "+String.Join(",",fields)+" FROM " + table;
+            this.cmd.CommandText = "SELECT " + String.Join(",", fields) + " FROM " + table;
             if (!String.IsNullOrEmpty(filter)) this.cmd.CommandText += " WHERE " + filter;
             if (!String.IsNullOrEmpty(orderby)) this.cmd.CommandText += " ORDER BY " + orderby;
             if (limit > 0) this.cmd.CommandText += " LIMIT " + limit.ToString();
+
+            Result r = new Result(this.cmd.CommandText);
             if (this.connection.State != System.Data.ConnectionState.Open) this.connection.Open();
             SQLiteDataReader re = this.cmd.ExecuteReader();
             while (re.Read())
             {
-                List<string> rx = new List<string>(); 
+                Row row = new Row(re.StepCount);
+
                 foreach (string f in fields)
                 {
-                    rx.Add(re[f].ToString());
+                    row.AddCell(f, re[f].ToString());
                 }
-                r.Add(rx);
+
+                r.AddRow(row);
             }
             re.Close();
             return r;
         }
 
-        public bool Update(string table,Dictionary<string,string> fieldset,string filter)
+        public bool Update(string table, Dictionary<string, string> fieldset, string filter)
         {
             string setter = "";
-            foreach (KeyValuePair<string,string> item in fieldset)
+            foreach (KeyValuePair<string, string> item in fieldset)
             {
-                setter+= "`"+item.Key+"`='"+item.Value+"', ";
+                setter += "`" + item.Key + "`='" + item.Value + "', ";
             }
             setter = setter.Remove(setter.Length - 2);
-            this.cmd.CommandText = "UPDATE " + table + " SET "+setter+" WHERE " + filter;
+            this.cmd.CommandText = "UPDATE " + table + " SET " + setter + " WHERE " + filter;
             if (this.connection.State != System.Data.ConnectionState.Open) this.connection.Open();
             int r = this.cmd.ExecuteNonQuery();
             if (r > 0) return true;
@@ -141,7 +143,7 @@ namespace WebDaD.Toolkit.Database
                 values += "'" + item.Value + "', ";
             }
             values = values.Remove(values.Length - 2);
-            this.cmd.CommandText = "INSERT INTO " + table + " ("+fields+") VALUES (" + values + ")";
+            this.cmd.CommandText = "INSERT INTO " + table + " (" + fields + ") VALUES (" + values + ")";
             if (this.connection.State != System.Data.ConnectionState.Open) this.connection.Open();
             int r = this.cmd.ExecuteNonQuery();
             if (r > 0) return true;
@@ -152,6 +154,166 @@ namespace WebDaD.Toolkit.Database
         {
             if (this.connection.State != System.Data.ConnectionState.Open) this.connection.Open();
             return this.connection.LastInsertRowId.ToString();
+        }
+
+
+
+        public Result Select(string sql)
+        {
+            List<string> fields = new List<string>();
+
+            string fieldset = sql.Split(new string[] { "FROM" }, StringSplitOptions.None)[0].Replace("SELECT", "");
+            string[] sf = fieldset.Split(',');
+            foreach (string item in sf)
+            {
+                if (item.ToLower().Contains(" as "))
+                {
+                    fields.Add(item.ToLower().Split(new string[] { " as " }, StringSplitOptions.None)[1].Trim()); 
+                }
+                else
+                {
+                    fields.Add(item.Trim());
+                }
+            }
+
+            this.cmd.CommandText = sql;
+            Result r = new Result(this.cmd.CommandText);
+            if (this.connection.State != System.Data.ConnectionState.Open) this.connection.Open();
+            SQLiteDataReader re = this.cmd.ExecuteReader();
+            while (re.Read())
+            {
+                Row row = new Row(re.StepCount);
+
+                foreach (string f in fields)
+                {
+                    row.AddCell(f, re[f].ToString());
+                }
+
+                r.AddRow(row);
+            }
+            re.Close();
+            return r;
+
+        }
+
+        public bool CreateTable(string table, Dictionary<string, string> fields, string primary_field)
+        {
+            string sql = "CREATE TABLE IF NOT EXISTS " + table + " (";
+            foreach (KeyValuePair<string, string> item in fields)
+            {
+                sql += item.Key + " " + item.Value;
+                if (item.Key == primary_field)
+                {
+                    sql += " PRIMARY KEY";
+                }
+                sql += ", ";
+            }
+            sql = sql.Remove(sql.Length - 1);
+            sql += ")";
+
+            return this.Execute(sql);
+        }
+
+        public Result getRow(string table, string[] fields, Condition[] c = null, GroupBy g = null, OrderBy[] o = null, int limit = 0)
+        {
+            this.cmd.CommandText = "SELECT " + String.Join(",", fields) + " FROM " + table;
+            if (c != null)
+            {
+                this.cmd.CommandText += " WHERE (";
+                foreach (Condition item in c)
+                {
+                    this.cmd.CommandText += item.ToString() + " AND ";
+                }
+                this.cmd.CommandText = this.cmd.CommandText.Remove(this.cmd.CommandText.Length - 5);
+                this.cmd.CommandText += ") ";
+            }
+            if (g != null)
+            {
+                this.cmd.CommandText += g.ToString();
+            }
+            if (o != null)
+            {
+                this.cmd.CommandText += " ORDER BY ";
+                foreach (OrderBy item in o)
+                {
+                    this.cmd.CommandText += item.ToShortString() + ", ";
+                }
+                this.cmd.CommandText = this.cmd.CommandText.Remove(this.cmd.CommandText.Length - 2);
+            }
+            if (limit != 0)
+            {
+                this.cmd.CommandText += " LIMIT " + limit.ToString();
+            }
+            Result r = new Result(this.cmd.CommandText);
+            if (this.connection.State != System.Data.ConnectionState.Open) this.connection.Open();
+            SQLiteDataReader re = this.cmd.ExecuteReader();
+            while (re.Read())
+            {
+                Row row = new Row(re.StepCount);
+
+                foreach (string f in fields)
+                {
+                    row.AddCell(f, re[f].ToString());
+                }
+
+                r.AddRow(row);
+            }
+            re.Close();
+            return r;
+        }
+
+        public Result getRow(Joinable j, string[] fields, Condition[] c = null, GroupBy g = null, OrderBy[] o = null, int limit = 0)
+        {
+            this.cmd.CommandText = "SELECT " + String.Join(",", fields) + " FROM " + j.GetTableName();
+            if (c != null)
+            {
+                this.cmd.CommandText += " WHERE (";
+                foreach (Condition item in c)
+                {
+                    this.cmd.CommandText += item.ToString() + " AND ";
+                }
+                this.cmd.CommandText = this.cmd.CommandText.Remove(this.cmd.CommandText.Length - 5);
+                this.cmd.CommandText += ") ";
+            }
+            if (g != null)
+            {
+                this.cmd.CommandText += g.ToString();
+            }
+            if (o != null)
+            {
+                this.cmd.CommandText += " ORDER BY ";
+                foreach (OrderBy item in o)
+                {
+                    this.cmd.CommandText += item.ToShortString() + ", ";
+                }
+                this.cmd.CommandText = this.cmd.CommandText.Remove(this.cmd.CommandText.Length - 2);
+            }
+            if (limit != 0)
+            {
+                this.cmd.CommandText += " LIMIT " + limit.ToString();
+            }
+            Result r = new Result(this.cmd.CommandText);
+            if (this.connection.State != System.Data.ConnectionState.Open) this.connection.Open();
+            SQLiteDataReader re = this.cmd.ExecuteReader();
+            while (re.Read())
+            {
+                Row row = new Row(re.StepCount);
+
+                foreach (string f in fields)
+                {
+                    row.AddCell(f, re[f].ToString());
+                }
+
+                r.AddRow(row);
+            }
+            re.Close();
+            return r;
+        }
+
+        public Result Join(Joinable[] tables, Condition[] c, GroupBy g, OrderBy[] o)
+        {
+            //TODO: this is a complicated thing.
+            throw new NotImplementedException();
         }
     }
 }

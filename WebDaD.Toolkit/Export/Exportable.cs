@@ -11,16 +11,16 @@ namespace WebDaD.Toolkit.Export
         /// Create a Content Object to send to Export
         /// </summary>
         /// <returns>A Content Object to use for Export</returns>
-        Content ToContent();
+        Content ToContent(ExportCount c);
 
         /// <summary>
         /// The Name of the Data as shown to the User
         /// </summary>
-        string DataName();
+        string DataName(ExportCount c);
 
         /// <summary>
         /// The Name of the File to create
         /// </summary>
-        string Filename();
+        string Filename(ExportCount c);
     }
 }

@@ -22,7 +22,12 @@ namespace WebDaD.Toolkit.Database
 
         public override string ToString()
         {
-            return "ORDER BY `"+this.field+"` "+((this.direction==ASC)?"ASC":"DESC");
-        }
+            return "ORDER BY `" + this.field + "` " + ((this.direction == ASC) ? "ASC" : "DESC");
+        }
+
+        public string ToShortString()
+        {
+            return this.field + "` " + ((this.direction == ASC) ? "ASC" : "DESC");
+        }
     }
 }

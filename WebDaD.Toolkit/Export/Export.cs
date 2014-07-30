@@ -18,35 +18,35 @@ namespace WebDaD.Toolkit.Export
         /// <param name="template">A Template to print the Data into</param>
         /// <param name="basepath">The Basepath to create the file in</param>
         /// <returns>The Path of the created Export</returns>
-        public static string DataExport(ExportType type, Exportable data, Template template, string basepath)
+        public static string DataExport(ExportType type, Exportable data, Template template, string basepath, ExportCount ec)
         {
-            string path = basepath+"\\"+data.Filename(); //TODO: need to Add fileending
+            string path = basepath+"\\"+data.Filename(ec); //TODO: need to Add fileending
 
             switch (type)
             {
                 case ExportType.PDF:
-                    path = exportPDF(data.DataName(), data.ToContent(), template, path);
+                    path = exportPDF(data.DataName(ec), data.ToContent(ec), template, path);
                     break;
                 case ExportType.Word:
-                    path = exportWord(data.DataName(), data.ToContent(), template, path);
+                    path = exportWord(data.DataName(ec), data.ToContent(ec), template, path);
                     break;
                 case ExportType.Excel:
-                    path = exportExcel(data.DataName(), data.ToContent(), template, path);
+                    path = exportExcel(data.DataName(ec), data.ToContent(ec), template, path);
                     break;
                 case ExportType.TXT:
-                    path = exportTXT(data.DataName(), data.ToContent(), template, path);
+                    path = exportTXT(data.DataName(ec), data.ToContent(ec), template, path);
                     break;
                 case ExportType.CSV:
-                    path = exportCSV(data.DataName(), data.ToContent(), template, path);
+                    path = exportCSV(data.DataName(ec), data.ToContent(ec), template, path);
                     break;
                 case ExportType.HTML:
-                    path = exportHTML(data.DataName(), data.ToContent(), template, path);
+                    path = exportHTML(data.DataName(ec), data.ToContent(ec), template, path);
                     break;
                 case ExportType.XML:
-                    path = exportXML(data.DataName(), data.ToContent(), template, path);
+                    path = exportXML(data.DataName(ec), data.ToContent(ec), template, path);
                     break;
                 case ExportType.MD:
-                    path = exportMD(data.DataName(), data.ToContent(), template, path);
+                    path = exportMD(data.DataName(ec), data.ToContent(ec), template, path);
                     break;
                 default:
                     break;
