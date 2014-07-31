@@ -18,6 +18,7 @@ namespace WebDaD.Toolkit.Database
         public Result(string query)
         {
             this.query = query;
+            this.rows = new List<Row>();
         }
 
         public Dictionary<string,string> FirstRow{get {return rows[0].Cells;}}

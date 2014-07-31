@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using WebDaD.Toolkit.Database;
 
 namespace WebDaD.Toolkit.Export
 {
@@ -9,19 +10,18 @@ namespace WebDaD.Toolkit.Export
     {
         public static Dictionary<string, string> getTemplates(WebDaD.Toolkit.Database.Database db)
         {
-            List<List<string>> d = new List<List<string>>();
-            d = db.getRow(Template.table, new string[] { "id", "name" });
+            WebDaD.Toolkit.Database.Result d = db.getRow(Template.table, new string[] { "id", "name" },"","");
 
             Dictionary<string, string> r = new Dictionary<string, string>();
 
             r.Add("0", "Keines");
 
-            foreach (List<string> item in d)
+            foreach (WebDaD.Toolkit.Database.Row item in d.Rows)
             {
-                r.Add(item[0], item[1]);
+                r.Add(item.Cells["id"],item.Cells["name"]);
             }
 
-            if (d.Count > 0) return r;
+            if (d.RowCount > 0) return r;
             else return null;
         }
 
@@ -136,14 +136,13 @@ namespace WebDaD.Toolkit.Export
         public Template(WebDaD.Toolkit.Database.Database db, string id)
         {
             this.db = db;
-            List<List<string>> d = new List<List<string>>();
-            d = this.db.getRow(Template.table, new string[] { "id", "name","beforeContent","afterContent","header","footer"},"`id`='"+id+"'","",1);
-            this.id = d[0][0];
-            this.name = d[0][1];
-            this.beforeContent = d[0][2];
-            this.afterContent = d[0][3];
-            this.header = d[0][4];
-            this.footer = d[0][5];
+            WebDaD.Toolkit.Database.Result d = this.db.getRow(Template.table, new string[] { "id", "name", "beforeContent", "afterContent", "header", "footer" }, "`id`='" + id + "'", "", 1);
+            this.id = d.FirstRow["id"];
+            this.name = d.FirstRow["name"];
+            this.beforeContent = d.FirstRow["beforeContent"];
+            this.afterContent = d.FirstRow["afterContent"];
+            this.header = d.FirstRow["header"];
+            this.footer = d.FirstRow["footer"];
             this.empty = false;
         }
 

@@ -26,7 +26,7 @@ namespace WebDaD.Toolkit.Database
         {
             this.datasource = datasource;
             this.connection = new SQLiteConnection();
-            this.connection.ConnectionString = "Data Source=" + this.datasource;
+            this.connection.ConnectionString = this.datasource;
             this.cmd = new SQLiteCommand(this.connection);
         }
 
