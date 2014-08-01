@@ -330,8 +330,8 @@ namespace WebDaD.Toolkit.Database
             List<string> fields = new List<string>();
             foreach (Joinable j in tables)
             {
-                sql += String.Join(",", j.GetFields()) + ", ";
-                foreach (string item in j.GetFields())
+                sql += String.Join(",", j.GetFields(true)) + ", ";
+                foreach (string item in j.GetFields(true))
                 {
                     fields.Add(item);
                 }

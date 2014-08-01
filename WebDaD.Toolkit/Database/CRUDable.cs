@@ -9,9 +9,7 @@ namespace WebDaD.Toolkit.Database
     {
         bool Save();
         bool Delete();
-        CRUDable New();
         Dictionary<string,string> GetIDList();
-        CRUDable GetSingleInstance(string id);
         List<CRUDable> GetFullList();
     }
 }

@@ -9,6 +9,6 @@ namespace WebDaD.Toolkit.Database
     {
         string GetJoinOn(Joinable jointable);
         string GetTableName();
-        List<string> GetFields();
+        List<string> GetFields(bool joinable);
     }
 }
