@@ -101,6 +101,8 @@
     <Compile Include="Export\ExportCount.cs" />
     <Compile Include="Export\ExportType.cs" />
     <Compile Include="Export\Template.cs" />
+    <Compile Include="Helper\Args.cs" />
+    <Compile Include="Helper\ComboBoxItem.cs" />
     <Compile Include="Licensing\License.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
