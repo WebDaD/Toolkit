@@ -76,8 +76,9 @@ namespace WebDaD.Toolkit.Database
         {
             this.cmd.CommandText = "SELECT " + field + " FROM " + table + " WHERE " + filter + " LIMIT 1";
             if (this.connection.State != System.Data.ConnectionState.Open) this.connection.Open();
-            string r = this.cmd.ExecuteScalar().ToString();
-            return r;
+            object o = this.cmd.ExecuteScalar();
+            if (o != null) return o.ToString();
+            else return "";
         }
 
         public Result getRow(string table, string[] fields, string filter = "", string orderby = "", int limit = 0)
