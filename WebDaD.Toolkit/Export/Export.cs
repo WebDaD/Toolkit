@@ -4,11 +4,28 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Data;
+using System.Diagnostics;
 
 namespace WebDaD.Toolkit.Export
 {
     public static class Export
     {
+        public static List<ExportType> NotYetSupported
+        {
+            get
+            {
+                List<ExportType> r = new List<ExportType>();
+
+                r.Add(ExportType.MarkDown);
+                r.Add(ExportType.XML);
+                r.Add(ExportType.CSV);
+                r.Add(ExportType.Excel);
+                r.Add(ExportType.Word);
+
+                return r;
+            }
+        }
+
         /// <summary>
         /// Exports the Data given
         /// </summary>
@@ -19,12 +36,12 @@ namespace WebDaD.Toolkit.Export
         /// <returns>The Path of the created Export</returns>
         public static string DataExport(ExportType type, Exportable data, Template template, string basepath, ExportCount ec)
         {
-            string path = basepath+"\\"+data.Filename(ec); //TODO: need to Add fileending
+            string path = basepath+"\\"+data.Filename(ec); //need to Add fileending
 
             switch (type)
             {
                 case ExportType.PDF:
-                    path = exportPDF(data.DataName(ec), data.ToContent(ec), template, path);
+                    path = exportPDF(data.DataName(ec), data.ToContent(ec), template, path,basepath);
                     break;
                 case ExportType.Word:
                     path = exportWord(data.DataName(ec), data.ToContent(ec), template, path);
@@ -39,12 +56,12 @@ namespace WebDaD.Toolkit.Export
                     path = exportCSV(data.DataName(ec), data.ToContent(ec), template, path);
                     break;
                 case ExportType.HTML:
-                    path = exportHTML(data.DataName(ec), data.ToContent(ec), template, path);
+                    path = exportHTML(data.DataName(ec), data.ToContent(ec), template, path, basepath);
                     break;
                 case ExportType.XML:
                     path = exportXML(data.DataName(ec), data.ToContent(ec), template, path);
                     break;
-                case ExportType.MD:
+                case ExportType.MarkDown:
                     path = exportMD(data.DataName(ec), data.ToContent(ec), template, path);
                     break;
                 default:
@@ -64,7 +81,7 @@ namespace WebDaD.Toolkit.Export
             throw new NotImplementedException();
         }
 
-        private static string exportHTML(string title, Content content, Template template, string path)
+        private static string exportHTML(string title, Content content, Template template, string path, string basepath, string css="html.css")
         {
             path += ".html";
             using (StreamWriter file = new StreamWriter(path))
@@ -73,7 +90,7 @@ namespace WebDaD.Toolkit.Export
                 file.WriteLine("<html>");
                     file.WriteLine("<head>");
                         file.WriteLine("<title>"+title+"</title>");
-                        foreach (string line in getCSS())
+                        foreach (string line in getCSS(basepath+Path.DirectorySeparatorChar+"templates"+Path.DirectorySeparatorChar+css))
                         {
                             file.WriteLine(line);
                         }
@@ -97,8 +114,8 @@ namespace WebDaD.Toolkit.Export
                         }
 
                         file.WriteLine("<div id=\"textBefore\">");
-                        file.WriteLine("div id=\"textBefore_left\">" + template.TextBefore_Left.Replace(Template.LINEBREAK, "<br/>") + "</div>");
-                        file.WriteLine("div id=\"textBefore_right\">" + template.TextBefore_Right.Replace(Template.LINEBREAK, "<br/>") + "</div>");
+                        file.WriteLine("<div id=\"textBefore_left\">" + template.TextBefore_Left.Replace(Template.LINEBREAK, "<br/>") + "</div>");
+                        file.WriteLine("<div id=\"textBefore_right\">" + template.TextBefore_Right.Replace(Template.LINEBREAK, "<br/>") + "</div>");
                         file.WriteLine("</div>");
 
                         file.WriteLine("<div id=\"beforeContent\">" + template.BeforeContent + "</div>");
@@ -173,10 +190,18 @@ namespace WebDaD.Toolkit.Export
             return path;
         }
 
-        private static List<string> getCSS()
+        private static List<string> getCSS(string file)
         {
             List<string> c = new List<string>();
-            //TODO: define path here
+
+            try
+            {
+                c = File.ReadAllLines(file).ToList<string>();
+            }
+            catch (Exception e)
+            {
+                
+            }
             return c;
         }
 
@@ -327,9 +352,18 @@ namespace WebDaD.Toolkit.Export
             throw new NotImplementedException();
         }
 
-        private static string exportPDF(string title, Content content, Template template, string path)
+        private static string exportPDF(string title, Content content, Template template, string path, string basepath)
         {
-            throw new NotImplementedException();
+            string temp = basepath + ".html";
+            path += ".pdf";
+            temp = exportHTML(title, content, template, path, basepath,"pdf.css");
+
+            path = PdfGenerator.HtmlToPdf(Path.GetDirectoryName(path), Path.GetFileNameWithoutExtension(path), temp);                                                 
+                                                   
+
+
+            File.Delete(temp);
+            return path;
         }
     }
 }

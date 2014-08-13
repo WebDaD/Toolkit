@@ -73,6 +73,9 @@
       <HintPath>..\EinfacheVerwaltungsApplikation\Externals\System.Data.SQLite.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Web">
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -100,6 +103,7 @@
     <Compile Include="Export\Exportable.cs" />
     <Compile Include="Export\ExportCount.cs" />
     <Compile Include="Export\ExportType.cs" />
+    <Compile Include="Export\PdfGenerator.cs" />
     <Compile Include="Export\Template.cs" />
     <Compile Include="Helper\Args.cs" />
     <Compile Include="Helper\ComboBoxItem.cs" />
@@ -111,6 +115,9 @@
     <Folder Include="Backup\" />
     <Folder Include="Log\" />
     <Folder Include="Updates\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

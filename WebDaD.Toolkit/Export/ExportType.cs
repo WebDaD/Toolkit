@@ -14,6 +14,6 @@ namespace WebDaD.Toolkit.Export
         CSV,
         HTML,
         XML,
-        MD
+        MarkDown
     }
 }
