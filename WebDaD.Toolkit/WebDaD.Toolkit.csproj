@@ -103,6 +103,7 @@
     <Compile Include="Export\Template.cs" />
     <Compile Include="Helper\Args.cs" />
     <Compile Include="Helper\ComboBoxItem.cs" />
+    <Compile Include="Helper\HugeInt.cs" />
     <Compile Include="Licensing\License.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -9,7 +9,6 @@ namespace WebDaD.Toolkit.Export
 {
     public static class Export
     {
-        private static readonly string TAB = "\t";
         /// <summary>
         /// Exports the Data given
         /// </summary>
@@ -67,7 +66,118 @@ namespace WebDaD.Toolkit.Export
 
         private static string exportHTML(string title, Content content, Template template, string path)
         {
-            throw new NotImplementedException();
+            path += ".html";
+            using (StreamWriter file = new StreamWriter(path))
+            {
+                //html header (containing CSS!)
+                file.WriteLine("<html>");
+                    file.WriteLine("<head>");
+                        file.WriteLine("<title>"+title+"</title>");
+                        foreach (string line in getCSS())
+                        {
+                            file.WriteLine(line);
+                        }
+                    file.WriteLine("</head>");
+
+                //header
+                    file.WriteLine("<body>");
+                    if (!template.IsEmpty)
+                    {
+                        if (template.Header != null)
+                        {
+                            file.WriteLine("<div id=\"header_full\">" + template.Header.Replace(Template.IMAGE_TAG, "<img src=\"").Replace(Template.IMAGE_END, "\"/>") + "</div>");
+                        }
+                        else
+                        {
+                            file.WriteLine("<div id=\"header\">");
+                            file.WriteLine("<div id=\"header_left\">" + template.Header_Left.Replace(Template.IMAGE_TAG, "<img src=\"").Replace(Template.IMAGE_END, "\"/>") + "</div>");
+                            file.WriteLine("<div id=\"header_center\">" + template.Header_Center.Replace(Template.IMAGE_TAG, "<img src=\"").Replace(Template.IMAGE_END, "\"/>") + "</div>");
+                            file.WriteLine("<div id=\"header_right\">" + template.Header_Right.Replace(Template.IMAGE_TAG, "<img src=\"").Replace(Template.IMAGE_END, "\"/>") + "</div>");
+                            file.WriteLine("</div>");
+                        }
+
+                        file.WriteLine("<div id=\"textBefore\">");
+                        file.WriteLine("div id=\"textBefore_left\">" + template.TextBefore_Left.Replace(Template.LINEBREAK, "<br/>") + "</div>");
+                        file.WriteLine("div id=\"textBefore_right\">" + template.TextBefore_Right.Replace(Template.LINEBREAK, "<br/>") + "</div>");
+                        file.WriteLine("</div>");
+
+                        file.WriteLine("<div id=\"beforeContent\">" + template.BeforeContent + "</div>");
+                    }
+                    
+                    file.WriteLine("<h1>" + title + "</h1>");
+
+                //content
+                    switch (content.Type)
+                    {
+                        case DataType.Table:
+                            ContentTable c = (ContentTable)content as ContentTable;
+                            file.WriteLine("<table>");
+                            file.WriteLine("<tr>");
+                            foreach (DataColumn col in c.Table.Columns)
+                            {
+                                file.Write("<th>"+col.Caption + "</th>");
+                            }
+                            file.WriteLine("</tr>");
+                            foreach (DataRow row in c.Table.Rows)
+                            {
+                                file.WriteLine("<tr>");
+                                foreach (string item in row.ItemArray)
+                                {
+                                    file.WriteLine("<td>" + item.Replace(Template.EMPTY,Template.HTML_SPACE) + "</td>");
+                                }
+                                file.WriteLine("</tr>");
+                            }
+                            file.WriteLine("</table>");
+                            break;
+                        case DataType.Paragraphs:
+                            ContentParagraphs p = (ContentParagraphs)content as ContentParagraphs;
+                            file.WriteLine("<dl>");
+                            foreach (KeyValuePair<string, string> item in p.Paragraphs)
+                            {
+                                file.WriteLine("<dt>"+item.Key+"</dt>");
+                                file.WriteLine("<dd>"+item.Value+"</dd>");
+                            }
+                            file.WriteLine("</dl>");
+                            break;
+                        case DataType.Text:
+                            ContentText t = (ContentText)content as ContentText;
+                            file.WriteLine("<p>" + t.Text + "</p>");
+                            break;
+                        default:
+                            break;
+                    }
+
+
+                //footer
+
+                    if (!template.IsEmpty)
+                    {
+                        file.WriteLine("<div id=\"afterContent\">" + template.AfterContent + "</div>");
+
+                        if (template.Footer != null)
+                        {
+                            file.WriteLine("<div id=\"footer_full\">" + template.Footer.Replace(Template.IMAGE_TAG, "<img src=\"").Replace(Template.IMAGE_END, "\"/>") + "</div>");
+                        }
+                        else
+                        {
+                            file.WriteLine("<div id=\"footer\">");
+                            file.WriteLine("<div id=\"footer_left\">" + template.Footer_Left.Replace(Template.IMAGE_TAG, "<img src=\"").Replace(Template.IMAGE_END, "\"/>") + "</div>");
+                            file.WriteLine("<div id=\"footer_center\">" + template.Footer_Center.Replace(Template.IMAGE_TAG, "<img src=\"").Replace(Template.IMAGE_END, "\"/>") + "</div>");
+                            file.WriteLine("<div id=\"footer_right\">" + template.Footer_Right.Replace(Template.IMAGE_TAG, "<img src=\"").Replace(Template.IMAGE_END, "\"/>") + "</div>");
+                            file.WriteLine("</div>");
+                        }
+                    }
+                    file.WriteLine("</body>");
+                file.WriteLine("</html>");
+            }
+            return path;
+        }
+
+        private static List<string> getCSS()
+        {
+            List<string> c = new List<string>();
+            //TODO: define path here
+            return c;
         }
 
         private static string exportCSV(string title, Content content, Template template, string path)
@@ -82,9 +192,72 @@ namespace WebDaD.Toolkit.Export
             {
                 if (!template.IsEmpty)
                 {
-                    file.WriteLine(template.Header_Left + TAB + TAB + template.Header_Center + TAB + TAB + template.Header_Right);
+                    if (template.Header != null)
+                    {
+                        file.WriteLine(template.Header);
+                    }
+                    else
+                    {
+                        file.WriteLine(template.Header_Left + Template.TAB + Template.TAB + template.Header_Center + Template.TAB + Template.TAB + template.Header_Right);
+                    }
+                    file.WriteLine("");
+
+                    int llines=0;
+                    if (template.TextBefore_Left.Contains(Template.LINEBREAK)) llines = template.TextBefore_Left.Split(Template.LINEBREAK.ToArray(),StringSplitOptions.RemoveEmptyEntries).Length;
+                    else llines = 1;
+
+                    int rlines = 0;
+                    if (template.TextBefore_Right.Contains(Template.LINEBREAK)) rlines = template.TextBefore_Right.Split(Template.LINEBREAK.ToArray(), StringSplitOptions.RemoveEmptyEntries).Length;
+                    else rlines = 1;
+
+                    if (llines > 1 && rlines > 1)
+                    {
+                        string[] ltext = template.TextBefore_Left.Split(Template.LINEBREAK.ToArray(), StringSplitOptions.RemoveEmptyEntries);
+                        string[] rtext = template.TextBefore_Right.Split(Template.LINEBREAK.ToArray(), StringSplitOptions.RemoveEmptyEntries);
+                        if (llines != rlines)
+                        {
+                            if (llines > rlines)
+                            {
+                                int j = 0;
+                                for (int i = 0; i < rlines; i++)
+                                {
+                                    file.WriteLine(ltext[i] + Template.TAB + Template.TAB + Template.TAB + Template.TAB + rtext[i]);
+                                    j++;
+                                }
+                                for (int i = j; i < rlines; i++)
+                                {
+                                    file.WriteLine(Template.TAB + Template.TAB + Template.TAB + Template.TAB + Template.TAB + rtext[i]);
+                                }
+                            }
+                            else
+                            {
+                                int j = 0;
+                                for (int i = 0; i < llines; i++)
+                                {
+                                    file.WriteLine(ltext[i] + Template.TAB + Template.TAB + Template.TAB + Template.TAB + rtext[i]);
+                                    j++;
+                                }
+                                for (int i = j; i < rlines; i++)
+                                {
+                                    file.WriteLine(Template.TAB + Template.TAB + Template.TAB + Template.TAB + Template.TAB + rtext[i]);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            for (int i = 0; i < llines; i++)
+                            {
+                                file.WriteLine(ltext[i] + Template.TAB + Template.TAB + Template.TAB + Template.TAB + rtext[i]);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        file.WriteLine(template.TextBefore_Left + Template.TAB + Template.TAB + Template.TAB + Template.TAB + template.TextBefore_Right);
+                    }
                     file.WriteLine("");
                 }
+                
                 file.WriteLine(title);
                 file.WriteLine("");
                 if (!template.IsEmpty)
@@ -98,14 +271,14 @@ namespace WebDaD.Toolkit.Export
                         ContentTable c = (ContentTable)content as ContentTable;
                         foreach (DataColumn col in c.Table.Columns)
                         {
-                            file.Write(col.Caption + TAB);
+                            file.Write(col.Caption + Template.TAB);
                         }
                         file.WriteLine("");
                         file.WriteLine(new String('-', c.TableWidth));
                         foreach (DataRow row in c.Table.Rows)
                         {
-                            string r = String.Join(TAB, row.ItemArray);
-                            r.Replace(Content.EMPTY, TAB);
+                            string r = String.Join(Template.TAB, row.ItemArray);
+                            r.Replace(Template.EMPTY, Template.TAB);
                             file.WriteLine(r);
                         }
                         file.WriteLine(new String('-', c.TableWidth));
@@ -131,7 +304,14 @@ namespace WebDaD.Toolkit.Export
                     file.WriteLine("");
                     file.WriteLine(template.AfterContent);
                     file.WriteLine("");
-                    file.WriteLine(template.Footer_Left + "\t\t" + template.Footer_Center + "\t\t" + template.Footer_Right);
+                    if (template.Footer != null)
+                    {
+                        file.WriteLine(template.Footer);
+                    }
+                    else
+                    {
+                        file.WriteLine(template.Footer_Left + Template.TAB + Template.TAB + template.Footer_Center + Template.TAB + Template.TAB + template.Footer_Right);
+                    }
                 }
             }
             return path;

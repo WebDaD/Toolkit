@@ -15,7 +15,5 @@ namespace WebDaD.Toolkit.Export
         {
             this.type = type;
         }
-
-        public static readonly string EMPTY = "%EMPTY%";
     }
 }

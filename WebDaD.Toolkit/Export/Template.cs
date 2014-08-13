@@ -8,6 +8,28 @@ namespace WebDaD.Toolkit.Export
 {
     public class Template
     {
+        public static readonly string TAB = "\t";
+        public static readonly string HTML_SPACE = "&nbsp;";
+        public static readonly string SPACE = " ";
+
+        /// <summary>
+        /// Used if Header / Footer is FULLLength (only use Header / Footer)
+        /// </summary>
+        public static readonly string FULLSTARTER = "%FULL%";
+
+        /// <summary>
+        /// Used for empty Fields, must be replaced by specific empty entity
+        /// </summary>
+        public static readonly string EMPTY = "%EMPTY%";
+
+        /// <summary>
+        /// Used to mark images, path is between those two
+        /// </summary>
+        public static readonly string IMAGE_TAG = "%IMG%";
+        public static readonly string IMAGE_END = "%/IMG%";
+
+        public static readonly string LINEBREAK = "%LB%";
+
         public static Dictionary<string, string> getTemplates(WebDaD.Toolkit.Database.Database db)
         {
             WebDaD.Toolkit.Database.Result d = db.getRow(Template.table, new string[] { "id", "name" },"","");
@@ -41,7 +63,35 @@ namespace WebDaD.Toolkit.Export
         private string afterContent;
         public string AfterContent { get { return afterContent; } set { afterContent = value; } }
 
+        private string textBefore;
+        public string TextBefore_Left
+        {
+            get
+            {
+                return textBefore.Split('|')[0];
+            }
+            set
+            {
+                string[] ht = textBefore.Split('|');
+                textBefore = value + "|" + ht[1];
+            }
+        }
+        public string TextBefore_Right
+        {
+            get
+            {
+                return textBefore.Split('|')[1];
+            }
+            set
+            {
+                string[] ht = textBefore.Split('|');
+                textBefore = ht[0] + "|" + value;
+            }
+        }
         private string header;
+        public string Header {
+            get { if (this.header.StartsWith(Template.FULLSTARTER))return Header_Left; else return null; }
+        }
         public string Header_Left
         {
             get
@@ -80,6 +130,10 @@ namespace WebDaD.Toolkit.Export
         }
 
         private string footer;
+        public string Footer
+        {
+            get { if (this.footer.StartsWith(Template.FULLSTARTER))return Footer_Left; else return null; }
+        }
         public string Footer_Left
         {
             get
@@ -125,6 +179,7 @@ namespace WebDaD.Toolkit.Export
                 r.Add("name", this.name);
                 r.Add("beforeContent", this.beforeContent);
                 r.Add("afterContent", this.afterContent);
+                r.Add("textBefore", this.textBefore);
                 r.Add("header", this.header);
                 r.Add("footer", this.footer);
                 return r;
@@ -136,11 +191,12 @@ namespace WebDaD.Toolkit.Export
         public Template(WebDaD.Toolkit.Database.Database db, string id)
         {
             this.db = db;
-            WebDaD.Toolkit.Database.Result d = this.db.getRow(Template.table, new string[] { "id", "name", "beforeContent", "afterContent", "header", "footer" }, "`id`='" + id + "'", "", 1);
+            WebDaD.Toolkit.Database.Result d = this.db.getRow(Template.table, new string[] { "id", "name", "beforeContent", "afterContent","textBefore", "header", "footer" }, "`id`='" + id + "'", "", 1);
             this.id = d.FirstRow["id"];
             this.name = d.FirstRow["name"];
             this.beforeContent = d.FirstRow["beforeContent"];
             this.afterContent = d.FirstRow["afterContent"];
+            this.textBefore = d.FirstRow["textBefore"];
             this.header = d.FirstRow["header"];
             this.footer = d.FirstRow["footer"];
             this.empty = false;
@@ -152,6 +208,7 @@ namespace WebDaD.Toolkit.Export
             this.name = "";
             this.beforeContent = "";
             this.afterContent = "";
+            this.textBefore = "|";
             this.header = " | | ";
             this.footer = " | | ";
             this.empty = true;
@@ -162,6 +219,7 @@ namespace WebDaD.Toolkit.Export
             this.name = "";
             this.beforeContent = "";
             this.afterContent = "";
+            this.textBefore = "";
             this.header = "";
             this.footer = "";
             this.empty = true;
