@@ -89,7 +89,7 @@ namespace WebDaD.Toolkit.Helper
         {
             return String.Join(".", this.data);
         }
-        public override bool Equals(HugeInt c)
+        public override bool Equals(object o)
         {
             throw new NotImplementedException();
         }
