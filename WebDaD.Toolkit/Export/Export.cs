@@ -34,14 +34,14 @@ namespace WebDaD.Toolkit.Export
         /// <param name="template">A Template to print the Data into</param>
         /// <param name="basepath">The Basepath to create the file in</param>
         /// <returns>The Path of the created Export</returns>
-        public static string DataExport(ExportType type, Exportable data, Template template, string basepath, ExportCount ec)
+        public static string DataExport(ExportType type, Exportable data, Template template, string basepath, ExportCount ec, string pathtohtmltopdf)
         {
             string path = basepath+"\\"+data.Filename(ec); //need to Add fileending
 
             switch (type)
             {
                 case ExportType.PDF:
-                    path = exportPDF(data.DataName(ec), data.ToContent(ec), template, path,basepath);
+                    path = exportPDF(data.DataName(ec), data.ToContent(ec), template, path, basepath, pathtohtmltopdf);
                     break;
                 case ExportType.Word:
                     path = exportWord(data.DataName(ec), data.ToContent(ec), template, path);
@@ -352,13 +352,13 @@ namespace WebDaD.Toolkit.Export
             throw new NotImplementedException();
         }
 
-        private static string exportPDF(string title, Content content, Template template, string path, string basepath)
+        private static string exportPDF(string title, Content content, Template template, string path, string basepath, string pathtohtmltopdf)
         {
             string temp = basepath + ".html";
             path += ".pdf";
             temp = exportHTML(title, content, template, path, basepath,"pdf.css");
 
-            path = PdfGenerator.HtmlToPdf(Path.GetDirectoryName(path), Path.GetFileNameWithoutExtension(path), temp);                                                 
+            path = PdfGenerator.HtmlToPdf(Path.GetDirectoryName(path), Path.GetFileNameWithoutExtension(path), temp, null, pathtohtmltopdf);                                                 
                                                    
 
 
