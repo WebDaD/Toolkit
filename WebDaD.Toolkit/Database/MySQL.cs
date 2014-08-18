@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
+using System.IO;
+using System.IO.Compression;
 
 namespace WebDaD.Toolkit.Database
 {
@@ -395,12 +397,35 @@ namespace WebDaD.Toolkit.Database
 
         public bool Dump(string targetFile)
         {
-            throw new NotImplementedException();
+            string tempfile = Path.GetDirectoryName(targetFile) + "database.sql";
+            using (MySqlBackup mb = new MySqlBackup(cmd))
+            {
+                if (this.connection.State != System.Data.ConnectionState.Open) this.connection.Open();
+                mb.ExportToFile(tempfile);
+            }
+            using (ZipArchive newFile = ZipFile.Open(targetFile, ZipArchiveMode.Create))
+            {
+                newFile.CreateEntryFromFile(tempfile, Path.GetFileName(tempfile), CompressionLevel.Optimal);
+            }
+            return true;
         }
 
         public bool Restore(string sourceFile)
         {
-            throw new NotImplementedException();
+            string tempfile = Path.GetDirectoryName(sourceFile) + "database.sql";
+            using (ZipArchive archive = ZipFile.OpenRead(sourceFile))
+            {
+                foreach (ZipArchiveEntry file in archive.Entries)
+                {
+                    file.ExtractToFile(tempfile, true);
+                }
+            }
+            using (MySqlBackup mb = new MySqlBackup(cmd))
+            {
+                if (this.connection.State != System.Data.ConnectionState.Open) this.connection.Open();
+                mb.ImportFromFile(tempfile);
+            }
+            return true;
         }
 
         private string ft2String(FieldType p)
