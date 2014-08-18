@@ -203,12 +203,14 @@ namespace WebDaD.Toolkit.Database
 
         }
 
-        public bool CreateTable(string table, Dictionary<string, string> fields, string primary_field)
+        public bool CreateTable(string table, Dictionary<string, FieldType> fields, string primary_field)
         {
             string sql = "CREATE TABLE IF NOT EXISTS " + table + " (";
-            foreach (KeyValuePair<string, string> item in fields)
+            foreach (KeyValuePair<string, FieldType> item in fields)
             {
-                sql += item.Key + " " + item.Value;
+                //TODO:  parse FieldTypes
+                      
+                sql += item.Key + " " + ft2String(item.Value);
                 if (item.Key == primary_field)
                 {
                     sql += " PRIMARY KEY";
@@ -219,6 +221,22 @@ namespace WebDaD.Toolkit.Database
             sql += ")";
 
             return this.Execute(sql);
+        }
+
+        private string ft2String(FieldType p)
+        {
+            switch (p)
+            {
+                case FieldType.String:return "TEXT";
+                case FieldType.ShortString: return "TEXT";
+                case FieldType.Date: return "TEXT";
+                case FieldType.DateTime: return "TEXT";
+                case FieldType.Integer: return "NUMBER";
+                case FieldType.PrimaryInteger: return "INTEGER NOT NULL AUTO_INCREMENT";//TODO: check with file
+                default://TODO: ERROR
+                    break;
+            }
+            throw new NotImplementedException();
         }
 
         public Result getRow(string table, string[] fields, Condition[] c = null, GroupBy g = null, OrderBy[] o = null, int limit = 0)

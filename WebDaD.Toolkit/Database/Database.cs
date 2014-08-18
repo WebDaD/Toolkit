@@ -19,7 +19,7 @@ namespace WebDaD.Toolkit.Database
         string GetLastInsertedID();
         bool isOpen();
         Result Select(string sql);
-        bool CreateTable(string table, Dictionary<string, string> fields,string primary_field);
+        bool CreateTable(string table, Dictionary<string, FieldType> fields,string primary_field);
         Result Join(Joinable[] tables, Condition[] c, GroupBy g, OrderBy[] o);
         /// <summary>
         /// Dumps the Database into a Single restorable File

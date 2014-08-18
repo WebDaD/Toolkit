@@ -78,6 +78,8 @@
       <HintPath>..\EinfacheVerwaltungsApplikation\Externals\System.Data.SQLite.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Web">
       <Private>True</Private>
     </Reference>
@@ -94,6 +96,7 @@
     <Compile Include="Database\CRUDable.cs" />
     <Compile Include="Database\Database.cs" />
     <Compile Include="Database\DatabaseType.cs" />
+    <Compile Include="Database\FieldType.cs" />
     <Compile Include="Database\GroupBy.cs" />
     <Compile Include="Database\OrderBy.cs" />
     <Compile Include="Database\Result.cs" />
@@ -115,10 +118,13 @@
     <Compile Include="Helper\ComboBoxItem.cs" />
     <Compile Include="Helper\HugeInt.cs" />
     <Compile Include="Licensing\License.cs" />
+    <Compile Include="Log\ErrorLevel.cs" />
+    <Compile Include="Log\Log.cs" />
+    <Compile Include="Log\LogEntry.cs" />
+    <Compile Include="Log\LogType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Log\" />
     <Folder Include="Update\" />
   </ItemGroup>
   <ItemGroup>
