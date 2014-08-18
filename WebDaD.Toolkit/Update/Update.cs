@@ -34,11 +34,15 @@ namespace WebDaD.Toolkit.Update
 
         private double getRecentVersion()
         {
-            WebClient client = new WebClient();
-            Stream stream = client.OpenRead(this.checkPath);
-            StreamReader reader = new StreamReader(stream);
-            String content = reader.ReadToEnd();
-            return Double.Parse(content);
+            try
+            {
+                WebClient client = new WebClient();
+                Stream stream = client.OpenRead(this.checkPath);
+                StreamReader reader = new StreamReader(stream);
+                String content = reader.ReadToEnd();
+                return Double.Parse(content);
+            }
+            catch { return 0.0; }
         }
 
         public bool UpdateAvaiable
