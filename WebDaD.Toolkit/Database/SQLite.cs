@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Data.SQLite;
+using System.IO.Compression;
+using System.IO;
 
 namespace WebDaD.Toolkit.Database
 {
@@ -410,14 +412,23 @@ namespace WebDaD.Toolkit.Database
 
         public bool Dump(string targetFile)
         {
-            //TODO: Simply copy datasource to targetfile (zip)
-            throw new NotImplementedException();
+            using (ZipArchive newFile = ZipFile.Open(targetFile, ZipArchiveMode.Create))
+            {
+                newFile.CreateEntryFromFile(this.datasource.Replace("Data Source=",""), Path.GetFileName(this.datasource.Replace("Data Source=","")),CompressionLevel.Optimal);
+            }
+            return true;
         }
 
         public bool Restore(string sourceFile)
         {
-            //TODO: unzip file and overwrite datasource file
-            throw new NotImplementedException();
+            using (ZipArchive archive = ZipFile.OpenRead(sourceFile))
+            {
+                foreach (ZipArchiveEntry file in archive.Entries)
+                {
+                    file.ExtractToFile(this.datasource.Replace("Data Source=", ""), true);
+                }
+            }
+            return true;
         }
     }
 }
