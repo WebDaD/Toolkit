@@ -388,5 +388,18 @@ namespace WebDaD.Toolkit.Database
             re.Close();
             return r;
         }
+
+
+        public bool Dump(string targetFile)
+        {
+            //TODO: Simply copy datasource to targetfile (zip)
+            throw new NotImplementedException();
+        }
+
+        public bool Restore(string sourceFile)
+        {
+            //TODO: unzip file and overwrite datasource file
+            throw new NotImplementedException();
+        }
     }
 }

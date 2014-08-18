@@ -21,5 +21,17 @@ namespace WebDaD.Toolkit.Database
         Result Select(string sql);
         bool CreateTable(string table, Dictionary<string, string> fields,string primary_field);
         Result Join(Joinable[] tables, Condition[] c, GroupBy g, OrderBy[] o);
+        /// <summary>
+        /// Dumps the Database into a Single restorable File
+        /// </summary>
+        /// <param name="targetFile">The Name and Path of the File</param>
+        /// <returns>If all went well</returns>
+        bool Dump(string targetFile);
+        /// <summary>
+        /// Restores the Database from the File, overwriting all Changes
+        /// </summary>
+        /// <param name="sourceFile">The File to read From</param>
+        /// <returns>If all went well</returns>
+        bool Restore(string sourceFile);
     }
 }
