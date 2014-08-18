@@ -71,6 +71,9 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MySql.Data, Version=6.8.3.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.SQLite, Version=1.0.93.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=AMD64">
@@ -98,6 +101,7 @@
     <Compile Include="Database\DatabaseType.cs" />
     <Compile Include="Database\FieldType.cs" />
     <Compile Include="Database\GroupBy.cs" />
+    <Compile Include="Database\MySQL.cs" />
     <Compile Include="Database\OrderBy.cs" />
     <Compile Include="Database\Result.cs" />
     <Compile Include="Database\Row.cs" />
