@@ -18,6 +18,7 @@ namespace WebDaD.Toolkit.Update
         private double version;
         private string checkPath;
         private double recentVersion;
+        private bool serverReachable;
         private WebDaD.Toolkit.Database.Database db;
 
         public Update(string apppath,string appname, double version,WebDaD.Toolkit.Database.Database db, string updatePath = "http://updates.webdad.eu/")
@@ -30,6 +31,8 @@ namespace WebDaD.Toolkit.Update
             this.db = db;
             this.checkPath = updatePath +webappname + "/recentVersion";
             this.recentVersion = getRecentVersion();
+            if (this.recentVersion == 0.0) { this.serverReachable = false; }
+            else this.serverReachable = true;
         }
 
         private double getRecentVersion()
@@ -52,6 +55,7 @@ namespace WebDaD.Toolkit.Update
                 return this.recentVersion > this.version;
             }
         }
+        public bool ServerReachable { get { return this.serverReachable; } }
 
         public bool PerformUpdate(string tempfolder)
         {
