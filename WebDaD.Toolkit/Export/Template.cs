@@ -30,6 +30,12 @@ namespace WebDaD.Toolkit.Export
 
         public static readonly string LINEBREAK = "%LB%";
 
+        public static readonly string ADDR = "%ADDR%";
+        public static readonly string OBJECT_ID = "%OBJECT_ID%";
+        public static readonly string WORKER = "%WORKER%";
+        public static readonly string DATE_CREATE = "%DATE_CREATE%";
+        public static readonly string DATE_SECOND = "%DATE_SECOND%";
+
         public static Dictionary<string, string> getTemplates(WebDaD.Toolkit.Database.Database db)
         {
             WebDaD.Toolkit.Database.Result d = db.getRow(Template.table, new string[] { "id", "name" },"","");
