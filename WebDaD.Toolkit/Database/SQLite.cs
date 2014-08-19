@@ -19,6 +19,17 @@ namespace WebDaD.Toolkit.Database
         {
             return "Data Source=" + datasource;
         }
+        public static Database_SQLite createFromConnectionString(string connectionString)
+        {
+            string datasource = "";
+            string[] tmp = connectionString.Split(';');
+            foreach (string item in tmp)
+            {
+                if (item.Contains("Data Source")) this.datasource = item.Split('=')[1].Trim();
+            }
+            return new Database_SQLite(datasource);
+        }
+        public DatabaseType getType() { return DatabaseType.SQLite; }
 
         public static Database_SQLite getDatabase(string datasource)
         {
@@ -40,7 +51,10 @@ namespace WebDaD.Toolkit.Database
             this.cmd = null;
             this.connection = null;
         }
-
+        public string ConnectionString()
+        {
+            return "Data Source=" + datasource;
+        }
         //open connection
         public bool Open()
         {

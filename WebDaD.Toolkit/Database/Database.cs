@@ -7,6 +7,8 @@ namespace WebDaD.Toolkit.Database
 {
     public interface Database
     {
+        DatabaseType getType();
+        string ConnectionString();
         bool Open();
         bool Close();
         string getValue(string table, string field, string filter);

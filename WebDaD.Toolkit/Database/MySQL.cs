@@ -23,6 +23,23 @@ namespace WebDaD.Toolkit.Database
         {
             return "Server="+server+";Database="+database+";Uid="+user+";Pwd="+password+";";
         }
+        public static Database_MySQL createFromConnectionString(string connectionString)
+        {
+            string server = "";
+            string database = "";
+            string user = "";
+            string password = "";
+            string[] tmp = connectionString.Split(';');
+            foreach (string item in tmp)
+            {
+                if (item.Contains("Server")) this.server = item.Split('=')[1].Trim();
+                if (item.Contains("Database")) this.database = item.Split('=')[1].Trim();
+                if (item.Contains("Uid")) this.user = item.Split('=')[1].Trim();
+                if (item.Contains("Pwd")) this.password = item.Split('=')[1].Trim();
+            }
+            return new Database_MySQL(server, database, user, password);
+        }
+        public DatabaseType getType() { return DatabaseType.MySQL; }
 
         public static Database_MySQL getDatabase(string server, string database,string user, string password)
         {
@@ -46,6 +63,11 @@ namespace WebDaD.Toolkit.Database
             this.connection.Dispose();
             this.cmd = null;
             this.connection = null;
+        }
+
+        public string ConnectionString()
+        {
+            return "Server=" + server + ";Database=" + database + ";Uid=" + user + ";Pwd=" + password + ";";
         }
 
         public bool Open()

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -88,6 +90,29 @@ namespace WebDaD.Toolkit.Update
             Directory.Delete(tempfolder + Path.DirectorySeparatorChar + "update", true);
             File.Delete(tempfolder + Path.DirectorySeparatorChar + "update.zip");
 
+            return true;
+        }
+
+        /// <summary>
+        /// Launches Path(startExe)/update_[this_version].exe AND then starts startExe again
+        /// </summary>
+        /// <param name="startExe">The software which called this method and should be started after this</param>
+        /// <returns>True if the Update Exe could be called (may then kill the calling assmebly)</returns>
+        public bool LaunchUpdater(string startExe="")
+        {
+            string updateExe = Path.GetDirectoryName(startExe) + Path.DirectorySeparatorChar + "update_" + Assembly.GetExecutingAssembly().GetName()
+.Version.ToString().Replace(".", "_") + ".exe";
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+            startInfo.FileName = updateExe;
+
+            startInfo.Arguments = "autostart ";
+            startInfo.Arguments += "apppath=" + this.apppath + " ";
+            startInfo.Arguments += "appname=" + this.appname + " ";
+            startInfo.Arguments += "version=" + this.version.ToString() + " ";
+            startInfo.Arguments += "db="+this.db.getType().ToString()+"|" + this.db.ConnectionString() + " ";
+            startInfo.Arguments += "updatePath=" + this.updatePath;
+
+            Process.Start(startInfo);
             return true;
         }
     }

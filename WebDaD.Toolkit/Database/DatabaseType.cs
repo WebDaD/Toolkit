@@ -8,5 +8,6 @@ namespace WebDaD.Toolkit.Database
     public enum DatabaseType
     {
         SQLite,
+        MySQL
     }
 }
