@@ -17,7 +17,7 @@ namespace WebDaD.Toolkit.Update
         private string updatePath;
         private string apppath;
         private string appname;
-        public string AppName { get { this.appname; } }
+        public string AppName { get { return this.appname; } }
         private string webappname;
         private double version;
         private string checkPath;

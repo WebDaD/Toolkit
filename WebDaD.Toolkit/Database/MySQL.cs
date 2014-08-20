@@ -32,10 +32,10 @@ namespace WebDaD.Toolkit.Database
             string[] tmp = connectionString.Split(';');
             foreach (string item in tmp)
             {
-                if (item.Contains("Server")) this.server = item.Split('=')[1].Trim();
-                if (item.Contains("Database")) this.database = item.Split('=')[1].Trim();
-                if (item.Contains("Uid")) this.user = item.Split('=')[1].Trim();
-                if (item.Contains("Pwd")) this.password = item.Split('=')[1].Trim();
+                if (item.Contains("Server")) server = item.Split('=')[1].Trim();
+                if (item.Contains("Database")) database = item.Split('=')[1].Trim();
+                if (item.Contains("Uid")) user = item.Split('=')[1].Trim();
+                if (item.Contains("Pwd")) password = item.Split('=')[1].Trim();
             }
             return new Database_MySQL(server, database, user, password);
         }
