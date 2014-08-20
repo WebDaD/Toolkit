@@ -8,6 +8,7 @@ using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using WebDaD.Toolkit.Communications;
 
 namespace WebDaD.Toolkit.Update
 {
@@ -42,11 +43,10 @@ namespace WebDaD.Toolkit.Update
         {
             try
             {
-                WebClient client = new WebClient();
-                Stream stream = client.OpenRead(this.checkPath);
-                StreamReader reader = new StreamReader(stream);
-                String content = reader.ReadToEnd();
-                return Double.Parse(content);
+                WebDaD.Toolkit.Communications.WebResponse w = Web.GetPageContent(this.checkPath);
+                if (w.HttpResponseCode == HttpStatusCode.OK)
+                    return Double.Parse(w.ReponseText);
+                else return 0.0;
             }
             catch { return 0.0; }
         }
@@ -63,9 +63,10 @@ namespace WebDaD.Toolkit.Update
         public bool PerformUpdate(string tempfolder)
         {
             //download update.zip from http://updates.webdad.eu/[appname]/[recentVersion]/update.zip
-            WebClient webClient = new WebClient();
-            webClient.DownloadFile("http://updates.webdad.eu/"+this.webappname+"/"+this.recentVersion+"/update.zip", tempfolder+Path.DirectorySeparatorChar+"update.zip");
-            fireUpdate("Files Downloaded", 20);
+            WebDaD.Toolkit.Communications.WebResponse w = Web.GetFile("http://updates.webdad.eu/" + this.webappname + "/" + this.recentVersion + "/update.zip", tempfolder + Path.DirectorySeparatorChar + "update.zip");
+            if (w.HttpResponseCode != HttpStatusCode.OK) return false;
+		else fireUpdate("Files Downloaded", 20);
+
 
             //unzip to tempfolder
             ZipFile.ExtractToDirectory(tempfolder + Path.DirectorySeparatorChar + "update.zip", tempfolder + Path.DirectorySeparatorChar + "update");
@@ -73,17 +74,20 @@ namespace WebDaD.Toolkit.Update
 
             //peform database changes from database_changes.txt
             string line = "";
-            System.IO.StreamReader file = new System.IO.StreamReader(tempfolder + Path.DirectorySeparatorChar + "update" + Path.DirectorySeparatorChar + "database_changes.txt");
-            while ((line = file.ReadLine()) != null)
+            if (File.Exists(tempfolder + Path.DirectorySeparatorChar + "update" + Path.DirectorySeparatorChar + "database_changes.txt"))
             {
-                this.db.Execute(line);
-            }
-            file.Close();
-            fireUpdate("Database changed", 60);
+ 		System.IO.StreamReader file = new System.IO.StreamReader(tempfolder + Path.DirectorySeparatorChar + "update" + Path.DirectorySeparatorChar + "database_changes.txt");
+                while ((line = file.ReadLine()) != null)
+                {
+                    this.db.Execute(line);
+                }
+                file.Close();
+ 		fireUpdate("Database changed", 60); //TODO: finer count into while
 
-            //remove database_changes.txt
+		//remove database_changes.txt
             File.Delete(tempfolder + Path.DirectorySeparatorChar + "update"+Path.DirectorySeparatorChar+"database_changes.txt");
             fireUpdate("First Cleanup", 65);
+            }
 
             //copy files to apppath
             foreach (string f in Directory.GetFiles(tempfolder + Path.DirectorySeparatorChar + "update"))
