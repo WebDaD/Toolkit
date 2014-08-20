@@ -62,8 +62,8 @@ namespace WebDaD.Toolkit.Update
         public bool PerformUpdate(string tempfolder)
         {
             //download update.zip from http://updates.webdad.eu/[appname]/[recentVersion]/update.zip
-            WebClient webClient = new WebClient();
-            webClient.DownloadFile("http://updates.webdad.eu/"+this.webappname+"/"+this.recentVersion+"/update.zip", tempfolder+Path.DirectorySeparatorChar+"update.zip");
+            WebDaD.Toolkit.Communications.WebResponse w = Web.GetFile("http://updates.webdad.eu/" + this.webappname + "/" + this.recentVersion + "/update.zip", tempfolder + Path.DirectorySeparatorChar + "update.zip");
+            if (w.HttpResponseCode != HttpStatusCode.OK) return false;
 
             //unzip to tempfolder
             ZipFile.ExtractToDirectory(tempfolder + Path.DirectorySeparatorChar + "update.zip", tempfolder + Path.DirectorySeparatorChar + "update");
