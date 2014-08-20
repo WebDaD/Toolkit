@@ -1,5 +1,5 @@
-# SIMBA
+# WebDaD.Toolkit
 
-Just a simple Tool to manage your Business.
+This Toolkit contains many Classes i created for simple reuse in other projects. Feel free to use or fork it.
 
-It is packed with a Toolkit, which may see its own repository in the near future
+A Description of the Classes will follow here...
