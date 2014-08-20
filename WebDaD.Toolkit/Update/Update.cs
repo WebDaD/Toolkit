@@ -8,6 +8,7 @@ using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using WebDaD.Toolkit.Communications;
 
 namespace WebDaD.Toolkit.Update
 {
@@ -41,11 +42,10 @@ namespace WebDaD.Toolkit.Update
         {
             try
             {
-                WebClient client = new WebClient();
-                Stream stream = client.OpenRead(this.checkPath);
-                StreamReader reader = new StreamReader(stream);
-                String content = reader.ReadToEnd();
-                return Double.Parse(content);
+                WebDaD.Toolkit.Communications.WebResponse w = Web.GetPageContent(this.checkPath);
+                if (w.HttpResponseCode == HttpStatusCode.OK)
+                    return Double.Parse(w.ReponseText);
+                else return 0.0;
             }
             catch { return 0.0; }
         }

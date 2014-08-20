@@ -25,7 +25,7 @@ namespace WebDaD.Toolkit.Database
             string[] tmp = connectionString.Split(';');
             foreach (string item in tmp)
             {
-                if (item.Contains("Data Source")) this.datasource = item.Split('=')[1].Trim();
+                if (item.Contains("Data Source")) datasource = item.Split('=')[1].Trim();
             }
             return new Database_SQLite(datasource);
         }
@@ -426,7 +426,7 @@ namespace WebDaD.Toolkit.Database
         {
             using (ZipArchive newFile = ZipFile.Open(targetFile, ZipArchiveMode.Create))
             {
-                newFile.CreateEntryFromFile(this.datasource.Replace("Data Source=",""), Path.GetFileName(this.datasource.Replace("Data Source=","")),CompressionLevel.Optimal);
+                newFile.CreateEntryFromFile(this.datasource.Replace("Data Source=",""), Path.GetFileName(this.datasource.Replace("Data Source=","")));
             }
             return true;
         }

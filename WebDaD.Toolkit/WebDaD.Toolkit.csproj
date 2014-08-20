@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>WebDaD.Toolkit</RootNamespace>
     <AssemblyName>WebDaD.Toolkit</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -97,6 +97,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Backup\Backup.cs" />
+    <Compile Include="Communications\Web.cs" />
+    <Compile Include="Communications\WebResponse.cs" />
     <Compile Include="Database\Condition.cs" />
     <Compile Include="Database\ConditionOperator.cs" />
     <Compile Include="Database\CRUDable.cs" />
