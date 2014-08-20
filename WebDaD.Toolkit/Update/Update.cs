@@ -70,16 +70,18 @@ namespace WebDaD.Toolkit.Update
 
             //peform database changes from database_changes.txt
             string line = "";
-            System.IO.StreamReader file = new System.IO.StreamReader(tempfolder + Path.DirectorySeparatorChar + "update" + Path.DirectorySeparatorChar + "database_changes.txt");
-            while ((line = file.ReadLine()) != null)
+            if (File.Exists(tempfolder + Path.DirectorySeparatorChar + "update" + Path.DirectorySeparatorChar + "database_changes.txt"))
             {
-                this.db.Execute(line);
+                System.IO.StreamReader file = new System.IO.StreamReader(tempfolder + Path.DirectorySeparatorChar + "update" + Path.DirectorySeparatorChar + "database_changes.txt");
+                while ((line = file.ReadLine()) != null)
+                {
+                    this.db.Execute(line);
+                }
+                file.Close();
+
+                //remove database_changes.txt
+                File.Delete(tempfolder + Path.DirectorySeparatorChar + "update" + Path.DirectorySeparatorChar + "database_changes.txt");
             }
-            file.Close();
-
-            //remove database_changes.txt
-            File.Delete(tempfolder + Path.DirectorySeparatorChar + "update"+Path.DirectorySeparatorChar+"database_changes.txt");
-
             //copy files to apppath
             foreach (string f in Directory.GetFiles(tempfolder + Path.DirectorySeparatorChar + "update"))
             {
