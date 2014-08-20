@@ -16,6 +16,7 @@ namespace WebDaD.Toolkit.Update
         private string updatePath;
         private string apppath;
         private string appname;
+        public string AppName { get { this.appname; } }
         private string webappname;
         private double version;
         private string checkPath;
@@ -64,9 +65,11 @@ namespace WebDaD.Toolkit.Update
             //download update.zip from http://updates.webdad.eu/[appname]/[recentVersion]/update.zip
             WebClient webClient = new WebClient();
             webClient.DownloadFile("http://updates.webdad.eu/"+this.webappname+"/"+this.recentVersion+"/update.zip", tempfolder+Path.DirectorySeparatorChar+"update.zip");
+            fireUpdate("Files Downloaded", 20);
 
             //unzip to tempfolder
             ZipFile.ExtractToDirectory(tempfolder + Path.DirectorySeparatorChar + "update.zip", tempfolder + Path.DirectorySeparatorChar + "update");
+            fireUpdate("Files unzipped", 40);
 
             //peform database changes from database_changes.txt
             string line = "";
@@ -76,22 +79,44 @@ namespace WebDaD.Toolkit.Update
                 this.db.Execute(line);
             }
             file.Close();
+            fireUpdate("Database changed", 60);
 
             //remove database_changes.txt
             File.Delete(tempfolder + Path.DirectorySeparatorChar + "update"+Path.DirectorySeparatorChar+"database_changes.txt");
+            fireUpdate("First Cleanup", 65);
 
             //copy files to apppath
             foreach (string f in Directory.GetFiles(tempfolder + Path.DirectorySeparatorChar + "update"))
             {
                 File.Copy(f, this.apppath + Path.DirectorySeparatorChar + Path.GetFileName(f));
             }
+            fireUpdate("Files copied", 90);
 
             //remove content in tempfolder
             Directory.Delete(tempfolder + Path.DirectorySeparatorChar + "update", true);
             File.Delete(tempfolder + Path.DirectorySeparatorChar + "update.zip");
+            fireUpdate("Final Cleanup", 100);
 
             return true;
         }
+
+        protected virtual void OnUpdateAction(UpdateActionEventArgs e)
+        {
+            EventHandler<UpdateActionEventArgs> handler = UpdateAction;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+        private void fireUpdate(string message, int percent)
+        {
+            UpdateActionEventArgs args = new UpdateActionEventArgs();
+            args.Message = message;
+            args.Percent = percent;
+            OnUpdateAction(args);
+        }
+
+        public event EventHandler<UpdateActionEventArgs> UpdateAction;
 
         /// <summary>
         /// Launches Path(startExe)/update_[this_version].exe AND then starts startExe again
@@ -106,6 +131,7 @@ namespace WebDaD.Toolkit.Update
             startInfo.FileName = updateExe;
 
             startInfo.Arguments = "autostart ";
+            startInfo.Arguments += "startExe=" + startExe + " ";
             startInfo.Arguments += "apppath=" + this.apppath + " ";
             startInfo.Arguments += "appname=" + this.appname + " ";
             startInfo.Arguments += "version=" + this.version.ToString() + " ";
