@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using WebDaD.Toolkit.Database;
@@ -30,11 +31,42 @@ namespace WebDaD.Toolkit.Export
 
         public static readonly string LINEBREAK = "%LB%";
 
+        //Placeholders
         public static readonly string ADDR = "%ADDR%";
         public static readonly string OBJECT_ID = "%OBJECT_ID%";
         public static readonly string WORKER = "%WORKER%";
         public static readonly string DATE_CREATE = "%DATE_CREATE%";
         public static readonly string DATE_SECOND = "%DATE_SECOND%";
+
+        public static string ReplacePlaceholder(string origin, string id, string addr, string worker, string datecreate, string datesecond)
+        {
+            if(!String.IsNullOrEmpty(addr))
+                origin = origin.Replace(ADDR, "Adresse: "+LINEBREAK+addr.Replace("\n",LINEBREAK));
+            else
+                origin = origin.Replace(ADDR, "");
+
+            if (!String.IsNullOrEmpty(id))
+                origin = origin.Replace(OBJECT_ID, "ID: "+id);
+            else
+                origin = origin.Replace(OBJECT_ID, "");
+
+            if (!String.IsNullOrEmpty(worker))
+                origin = origin.Replace(WORKER, "Mitarbeiter: "+worker);
+            else
+                origin = origin.Replace(WORKER, "");
+
+            if (!String.IsNullOrEmpty(datecreate))
+                origin = origin.Replace(DATE_CREATE, "Datum: "+datecreate);
+            else
+                origin = origin.Replace(DATE_CREATE, "");
+
+            if (!String.IsNullOrEmpty(datesecond))
+                origin = origin.Replace(DATE_SECOND, datesecond); //Already contains LABEL!
+            else
+                origin = origin.Replace(DATE_SECOND, "");
+
+            return origin;
+        }
 
         public static Dictionary<string, string> getTemplates(WebDaD.Toolkit.Database.Database db)
         {
@@ -97,6 +129,10 @@ namespace WebDaD.Toolkit.Export
         private string header;
         public string Header {
             get { if (this.header.StartsWith(Template.FULLSTARTER))return Header_Left; else return null; }
+            set
+            {
+                this.header = Template.FULLSTARTER+value;
+            }
         }
         public string Header_Left
         {
@@ -139,6 +175,10 @@ namespace WebDaD.Toolkit.Export
         public string Footer
         {
             get { if (this.footer.StartsWith(Template.FULLSTARTER))return Footer_Left; else return null; }
+            set
+            {
+                this.footer = Template.FULLSTARTER + value;
+            }
         }
         public string Footer_Left
         {
@@ -233,7 +273,12 @@ namespace WebDaD.Toolkit.Export
 
         public bool IsEmpty { get { return this.empty; } }
 
-        public bool Save()
+        /// <summary>
+        /// Saves the Data into the Database and included Images into a folder
+        /// </summary>
+        /// <param name="images">A List of images to be force-copied</param>
+        /// <returns>if all went good</returns>
+        public bool Save(List<string> images, string path)
         {
             bool ok = true;
             if (String.IsNullOrEmpty(this.id))
@@ -245,6 +290,14 @@ namespace WebDaD.Toolkit.Export
                 ok = db.Update(Template.table, this.FieldSet, "`id`='" + this.id + "'");
 
             }
+            if (ok)
+            {
+                foreach (string img in images)
+                {
+                    File.Copy(img, path + Path.DirectorySeparatorChar + Path.GetFileName(img),true);
+                }
+            }
+
             return ok;
         }
 

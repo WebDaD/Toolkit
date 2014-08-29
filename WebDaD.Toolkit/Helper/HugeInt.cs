@@ -93,5 +93,9 @@ namespace WebDaD.Toolkit.Helper
         {
             throw new NotImplementedException();
         }
+        public override int GetHashCode()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

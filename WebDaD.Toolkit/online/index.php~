@@ -1,0 +1,11 @@
+<?php
+if(isset($_GET["app"]) && isset($_GET["cmd"])){
+	//RESTCALL
+	//TODO: database!
+	if($_GET["app"] == "simba"){
+		if($_GET["cmd"]=="update"){
+		die("1.0");		
+		}
+	}
+}
+?>

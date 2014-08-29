@@ -22,5 +22,11 @@ namespace WebDaD.Toolkit.Export
         /// The Name of the File to create
         /// </summary>
         string Filename(ExportCount c);
+
+        string Adress { get; }
+        string ObjectID { get; }
+        string WorkerName { get; }
+        string DateCreated { get; }
+        string DateSecond { get; }
     }
 }

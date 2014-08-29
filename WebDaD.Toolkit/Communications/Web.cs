@@ -15,7 +15,7 @@ namespace WebDaD.Toolkit.Communications
             try
             {
                 string res = client.DownloadString(url);
-                return new WebResponse(200, res);
+                return new WebResponse(HttpStatusCode.OK, res);
             }
             catch (WebException we)
             {
@@ -29,7 +29,7 @@ namespace WebDaD.Toolkit.Communications
             try
             {
                 client.DownloadFile(url, target);
-                return new WebResponse(200, target);
+                return new WebResponse(HttpStatusCode.OK, target);
             }
             catch (WebException we)
             {

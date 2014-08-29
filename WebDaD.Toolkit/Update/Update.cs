@@ -25,7 +25,7 @@ namespace WebDaD.Toolkit.Update
         private bool serverReachable;
         private WebDaD.Toolkit.Database.Database db;
 
-        public Update(string apppath,string appname, double version,WebDaD.Toolkit.Database.Database db, string updatePath = "http://updates.webdad.eu/")
+        public Update(string apppath,string appname, double version,WebDaD.Toolkit.Database.Database db, string updatePath = "http://toolkit.webdad.eu/")
         {
             this.apppath = apppath;
             this.appname = appname;
@@ -33,7 +33,7 @@ namespace WebDaD.Toolkit.Update
             this.version = version;
             this.updatePath = updatePath;
             this.db = db;
-            this.checkPath = updatePath +webappname + "/recentVersion";
+            this.checkPath = updatePath + "index.php?app="+webappname+"&cmd=update";
             this.recentVersion = getRecentVersion();
             if (this.recentVersion == 0.0) { this.serverReachable = false; }
             else this.serverReachable = true;
