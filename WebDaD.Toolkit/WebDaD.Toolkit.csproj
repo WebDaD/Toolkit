@@ -86,6 +86,10 @@
     </Reference>
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Web">
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -121,9 +125,12 @@
     <Compile Include="Export\PdfGenerator.cs" />
     <Compile Include="Export\Template.cs" />
     <Compile Include="Helper\Args.cs" />
+    <Compile Include="Helper\BigInteger.cs" />
     <Compile Include="Helper\ComboBoxItem.cs" />
     <Compile Include="Helper\HugeInt.cs" />
     <Compile Include="Licensing\License.cs" />
+    <Compile Include="Licensing\RSAEncryption.cs" />
+    <Compile Include="Licensing\RSAPrivateEncryption.cs" />
     <Compile Include="Log\ErrorLevel.cs" />
     <Compile Include="Log\Log.cs" />
     <Compile Include="Log\LogEntry.cs" />
