@@ -71,6 +71,7 @@ namespace WebDaD.Toolkit.Licensing
 
         public Dictionary<string, string> FieldSet()
         {
+            if (this.id == "") { return null; }
             Dictionary<string,string> r = new Dictionary<string,string>();
             r.Add("username", this.username);
             r.Add("application", this.application);
@@ -86,11 +87,11 @@ namespace WebDaD.Toolkit.Licensing
             throw new NotImplementedException();
         }
 
-        public License(WebDaD.Toolkit.Database.Database db, string tablename, string id, string public_key, string private_key)
+        public License(WebDaD.Toolkit.Database.Database db, string tablename, string public_key, string private_key)
         {
+            this.id = "";
             this.db = db;
             this.tablename = tablename;
-            this.id = id;
             this.publickey_file = public_key;
             this.privatekey_file = private_key;
             enc = new RSAEncryption();
@@ -113,17 +114,12 @@ namespace WebDaD.Toolkit.Licensing
             return Encoding.UTF8.GetString(message);
         }
         public bool Save()
-        {
+        {//only if id is there!
             throw new NotImplementedException();
         }
 
         public bool Delete()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Dictionary<string, string> GetIDList()
-        {
+        {//only if id is there!
             throw new NotImplementedException();
         }
 
@@ -131,7 +127,20 @@ namespace WebDaD.Toolkit.Licensing
         {
             throw new NotImplementedException();
         }
+        public Dictionary<string, string> GetDictionary()
+        {
+            throw new NotImplementedException();
+        }
 
+        public bool Load(string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        List<string> GetIDList()
+        {
+            throw new NotImplementedException();
+        }
         internal static IEnumerable<ComboBoxItem> GetApplications(WebDaD.Toolkit.Database.Database db)
         {
             throw new NotImplementedException();
@@ -142,5 +151,8 @@ namespace WebDaD.Toolkit.Licensing
             //app|user
             throw new NotImplementedException();
         }
+
+
+        
     }
 }
