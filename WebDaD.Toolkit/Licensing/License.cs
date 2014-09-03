@@ -99,6 +99,11 @@ namespace WebDaD.Toolkit.Licensing
             enc.LoadPublicFromXml(public_key);
         }
 
+        public List<string> GetIDList()
+        {
+            throw new NotImplementedException();
+        }
+
         public string Encrypt(string target)
         {
             byte[] message = Encoding.UTF8.GetBytes(target);
@@ -137,10 +142,6 @@ namespace WebDaD.Toolkit.Licensing
             throw new NotImplementedException();
         }
 
-        List<string> GetIDList()
-        {
-            throw new NotImplementedException();
-        }
         internal static IEnumerable<ComboBoxItem> GetApplications(WebDaD.Toolkit.Database.Database db)
         {
             throw new NotImplementedException();
@@ -151,6 +152,9 @@ namespace WebDaD.Toolkit.Licensing
             //app|user
             throw new NotImplementedException();
         }
+
+
+
 
 
         
