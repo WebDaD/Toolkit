@@ -81,7 +81,7 @@ namespace WebDaD.Toolkit.Export
             throw new NotImplementedException();
         }
 
-        private static string exportHTML(string title, Content content, string id, string adress, string worker, string datecreate, string datesecond, Template template, string path, string basepath, string css = "html.css")
+        private static string exportHTML(string title, Content content, string id, string adress, string worker, string datecreate, string datesecond, Template template, string path, string basepath)
         {
             path += ".html";
             using (StreamWriter file = new StreamWriter(path))
@@ -90,7 +90,7 @@ namespace WebDaD.Toolkit.Export
                 file.WriteLine("<html>");
                 file.WriteLine("<head>");
                 file.WriteLine("<title>" + title + "</title>");
-                foreach (string line in getCSS(basepath + Path.DirectorySeparatorChar + "templates" + Path.DirectorySeparatorChar + css))
+                foreach (string line in getCSS(basepath + Path.DirectorySeparatorChar + "templates" + Path.DirectorySeparatorChar + template.CSS["html"]))
                 {
                     file.WriteLine(line);
                 }
@@ -356,7 +356,8 @@ namespace WebDaD.Toolkit.Export
         {
             string temp = basepath + ".html";
             path += ".pdf";
-            temp = exportHTML(title, content, id, adress, worker, datecreate, datesecond, template, path, basepath, "pdf.css");
+            //TODO: eigene PDF-Style!
+            temp = exportHTML(title, content, id, adress, worker, datecreate, datesecond, template, path, basepath);
 
             path = PdfGenerator.HtmlToPdf(Path.GetDirectoryName(path), Path.GetFileNameWithoutExtension(path), temp, null, pathtohtmltopdf);
 

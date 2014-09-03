@@ -217,6 +217,35 @@ namespace WebDaD.Toolkit.Export
             }
         }
 
+        private Dictionary<string, string> cssDic;
+        private string dbCSS { get {
+            string r = "";
+            foreach (KeyValuePair<string,string> item in this.cssDic)
+            {
+                r += item.Key + ":" + item.Value + "|";
+            }
+            r = r.Remove(r.Length - 1);
+            return r;
+        
+        } }
+        public Dictionary<string, string> CSS
+        {
+            get { return this.cssDic; }
+        }
+        private Dictionary<string, string> createDic(string css_string)
+        {
+            Dictionary<string, string> c = new Dictionary<string, string>();
+            if (css_string.Contains('|'))
+            {
+                foreach (string item in css_string.Split('|'))
+                {
+                    string[] tmp = item.Split(';');
+                    c.Add(tmp[0], tmp[1]);
+                }
+            }
+
+            return c;
+        }
         public Dictionary<string, string> FieldSet
         {
             get
@@ -228,6 +257,7 @@ namespace WebDaD.Toolkit.Export
                 r.Add("textBefore", this.textBefore);
                 r.Add("header", this.header);
                 r.Add("footer", this.footer);
+                r.Add("css", this.dbCSS);
                 return r;
             }
         }
@@ -237,7 +267,7 @@ namespace WebDaD.Toolkit.Export
         public Template(WebDaD.Toolkit.Database.Database db, string id)
         {
             this.db = db;
-            WebDaD.Toolkit.Database.Result d = this.db.getRow(Template.table, new string[] { "id", "name", "beforeContent", "afterContent","textBefore", "header", "footer" }, "`id`='" + id + "'", "", 1);
+            WebDaD.Toolkit.Database.Result d = this.db.getRow(Template.table, new string[] { "id", "name", "beforeContent", "afterContent","textBefore", "header", "footer","css" }, "`id`='" + id + "'", "", 1);
             this.id = d.FirstRow["id"];
             this.name = d.FirstRow["name"];
             this.beforeContent = d.FirstRow["beforeContent"];
@@ -245,8 +275,11 @@ namespace WebDaD.Toolkit.Export
             this.textBefore = d.FirstRow["textBefore"];
             this.header = d.FirstRow["header"];
             this.footer = d.FirstRow["footer"];
+            this.cssDic = createDic(d.FirstRow["css"]);
             this.empty = false;
         }
+
+        
 
         public Template(WebDaD.Toolkit.Database.Database db)
         {
@@ -257,6 +290,7 @@ namespace WebDaD.Toolkit.Export
             this.textBefore = "|";
             this.header = " | | ";
             this.footer = " | | ";
+            this.cssDic = new Dictionary<string,string>();
             this.empty = true;
         }
 
@@ -268,6 +302,7 @@ namespace WebDaD.Toolkit.Export
             this.textBefore = "";
             this.header = "";
             this.footer = "";
+            this.cssDic = new Dictionary<string, string>();
             this.empty = true;
         }
 
