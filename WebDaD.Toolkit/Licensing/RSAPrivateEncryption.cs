@@ -63,12 +63,12 @@ namespace WebDaD.Toolkit.Licensing
                     rsa.KeySize, maxDataLength, data.Length));
 
             // Add 4 byte padding to the data, and convert to BigInteger struct
-            BigInteger numData = GetBig(AddPadding(data));
+            System.Numerics.BigInteger numData = GetBig(AddPadding(data));
 
             RSAParameters rsaParams = rsa.ExportParameters(true);
-            BigInteger D = GetBig(rsaParams.D);
-            BigInteger Modulus = GetBig(rsaParams.Modulus);
-            BigInteger encData = BigInteger.ModPow(numData, D, Modulus);
+            System.Numerics.BigInteger D = GetBig(rsaParams.D);
+            System.Numerics.BigInteger Modulus = GetBig(rsaParams.Modulus);
+            System.Numerics.BigInteger encData = System.Numerics.BigInteger.ModPow(numData, D, Modulus);
             
             return encData.ToByteArray();
         }
@@ -78,13 +78,13 @@ namespace WebDaD.Toolkit.Licensing
             if (cipherData == null)
                 throw new ArgumentNullException("cipherData");
 
-            BigInteger numEncData = new BigInteger(cipherData);
+            System.Numerics.BigInteger numEncData = new System.Numerics.BigInteger(cipherData);
 
             RSAParameters rsaParams = rsa.ExportParameters(false);
-            BigInteger Exponent = GetBig(rsaParams.Exponent);
-            BigInteger Modulus = GetBig(rsaParams.Modulus);
+            System.Numerics.BigInteger Exponent = GetBig(rsaParams.Exponent);
+            System.Numerics.BigInteger Modulus = GetBig(rsaParams.Modulus);
 
-            BigInteger decData = BigInteger.ModPow(numEncData, Exponent, Modulus);
+            System.Numerics.BigInteger decData = System.Numerics.BigInteger.ModPow(numEncData, Exponent, Modulus);
 
             byte[] data = decData.ToByteArray();
             byte[] result = new byte[data.Length - 1];
@@ -95,14 +95,14 @@ namespace WebDaD.Toolkit.Licensing
             return result;
         }
 
-        private static BigInteger GetBig(byte[] data)
+        private static System.Numerics.BigInteger GetBig(byte[] data)
         {
             byte[] inArr = (byte[])data.Clone();
             Array.Reverse(inArr);  // Reverse the byte order
             byte[] final = new byte[inArr.Length + 1];  // Add an empty byte at the end, to simulate unsigned BigInteger (no negatives!)
             Array.Copy(inArr, final, inArr.Length);
 
-            return new BigInteger(final);
+            return new System.Numerics.BigInteger(final);
         }
 
         // Add 4 byte random padding, first bit *Always On*

@@ -62,9 +62,9 @@ namespace WebDaD.Toolkit.Licensing
         /// <param name="hash"></param>
         /// <param name="publickey_file"></param>
         /// <returns></returns>
-        public static bool IsLicensed(string hash, string publickey_file)
+        public static bool IsLicensed(string app,string user, string encrypted_hash)
         {
-            //use public key to get hash and read out values
+            //use public key to decrypt encrypted_hash and compare user and app
             //app|user
             throw new NotImplementedException();
         }
