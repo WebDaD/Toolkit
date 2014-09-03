@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using WebDaD.Toolkit.Database;
 
 namespace WebDaD.Toolkit.Export
@@ -239,7 +240,7 @@ namespace WebDaD.Toolkit.Export
             {
                 foreach (string item in css_string.Split('|'))
                 {
-                    string[] tmp = item.Split(';');
+                    string[] tmp = item.Split(':');
                     c.Add(tmp[0], tmp[1]);
                 }
             }
@@ -327,6 +328,7 @@ namespace WebDaD.Toolkit.Export
             }
             if (ok)
             {
+                if (!Directory.Exists(path)) Directory.CreateDirectory(path);
                 foreach (string img in images)
                 {
                     File.Copy(img, path + Path.DirectorySeparatorChar + Path.GetFileName(img),true);
@@ -334,6 +336,29 @@ namespace WebDaD.Toolkit.Export
             }
 
             return ok;
+        }
+        public string NiceID
+        {
+            get
+            {
+                string r = "T%ID5%";
+               
+
+                string reg_ID = @"%ID(\d+)%";
+                string count = "";
+                Regex reg = new Regex(reg_ID);
+                Match m = reg.Match(r);
+                if (m.Success)
+                {
+                    Group g = m.Groups[1];
+                    count = g.ToString();
+                    int c = Int32.Parse(count);
+                    r = r.Replace("%ID" + count + "%", id.PadLeft(c, '0'));
+                }
+
+
+                return r;
+            }
         }
 
         public bool Delete()

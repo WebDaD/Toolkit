@@ -5,6 +5,8 @@ using System.Text;
 using System.IO;
 using System.Data;
 using System.Diagnostics;
+using System.Web.UI.WebControls;
+using System.Text.RegularExpressions;
 
 namespace WebDaD.Toolkit.Export
 {
@@ -90,29 +92,33 @@ namespace WebDaD.Toolkit.Export
                 file.WriteLine("<html>");
                 file.WriteLine("<head>");
                 file.WriteLine("<title>" + title + "</title>");
-                foreach (string line in getCSS(basepath + Path.DirectorySeparatorChar + "templates" + Path.DirectorySeparatorChar + template.CSS["html"]))
+                file.WriteLine("<style>");
+                foreach (string line in getCSS(basepath + Path.DirectorySeparatorChar + "vorlagen" + Path.DirectorySeparatorChar + template.CSS["html"]))
                 {
                     file.WriteLine(line);
                 }
+                file.WriteLine("</style>");
                 file.WriteLine("</head>");
 
                 //header
                 file.WriteLine("<body>");
+                file.WriteLine("<div id=\"container\">");
                 if (!template.IsEmpty)
                 {
+                    file.WriteLine("<div id=\"header\">");
                     if (template.Header != null)
                     {
-                        file.WriteLine("<div id=\"header_full\">" + template.Header.Replace(Template.IMAGE_TAG, "<img src=\"").Replace(Template.IMAGE_END, "\"/>").Replace(Template.LINEBREAK, "<br/>").Replace(Template.FULLSTARTER,"") + "</div>");
+                        file.WriteLine(htmlTags(template.Header, basepath + Path.DirectorySeparatorChar + "vorlagen" + Path.DirectorySeparatorChar + template.NiceID).Replace(Template.FULLSTARTER, ""));
                     }
                     else
                     {
-                        file.WriteLine("<div id=\"header\">");
-                        file.WriteLine("<div id=\"header_left\">" + template.Header_Left.Replace(Template.IMAGE_TAG, "<img src=\"").Replace(Template.IMAGE_END, "\"/>") + "</div>");
-                        file.WriteLine("<div id=\"header_center\">" + template.Header_Center.Replace(Template.IMAGE_TAG, "<img src=\"").Replace(Template.IMAGE_END, "\"/>") + "</div>");
-                        file.WriteLine("<div id=\"header_right\">" + template.Header_Right.Replace(Template.IMAGE_TAG, "<img src=\"").Replace(Template.IMAGE_END, "\"/>") + "</div>");
-                        file.WriteLine("</div>");
-                    }
 
+                        file.WriteLine("<div class=\"left\">" + htmlTags(template.Header_Left, basepath + Path.DirectorySeparatorChar + "vorlagen" + Path.DirectorySeparatorChar + template.NiceID) + "</div>");
+                        file.WriteLine("<div class=\"center\">" + htmlTags(template.Header_Center, basepath + Path.DirectorySeparatorChar + "vorlagen" + Path.DirectorySeparatorChar + template.NiceID) + "</div>");
+                        file.WriteLine("<div class=\"right\">" + htmlTags(template.Header_Right, basepath + Path.DirectorySeparatorChar + "vorlagen" + Path.DirectorySeparatorChar + template.NiceID) + "</div>");
+                        
+                    }
+                    file.WriteLine("</div>");
                     file.WriteLine("<div id=\"textBefore\">");
                     file.WriteLine("<div id=\"textBefore_left\">" + Template.ReplacePlaceholder(template.TextBefore_Left.Replace(Template.LINEBREAK, "<br/>"), id, adress, worker, datecreate, datesecond) + "</div>");
                     file.WriteLine("<div id=\"textBefore_right\">" + Template.ReplacePlaceholder(template.TextBefore_Right.Replace(Template.LINEBREAK, "<br/>"), id, adress, worker, datecreate, datesecond) + "</div>");
@@ -129,12 +135,15 @@ namespace WebDaD.Toolkit.Export
                     case DataType.Table:
                         ContentTable c = (ContentTable)content as ContentTable;
                         file.WriteLine("<table>");
+                        file.WriteLine("<thead>");
                         file.WriteLine("<tr>");
                         foreach (DataColumn col in c.Table.Columns)
                         {
-                            file.Write("<th>" + col.Caption + "</th>");
+                            file.Write("<th scope=\"col\">" + col.Caption + "</th>");
                         }
                         file.WriteLine("</tr>");
+                        file.WriteLine("</thead>");
+                        file.WriteLine("<tbody>");
                         foreach (DataRow row in c.Table.Rows)
                         {
                             file.WriteLine("<tr>");
@@ -144,6 +153,7 @@ namespace WebDaD.Toolkit.Export
                             }
                             file.WriteLine("</tr>");
                         }
+                        file.WriteLine("</tbody>");
                         file.WriteLine("</table>");
                         break;
                     case DataType.Paragraphs:
@@ -171,25 +181,57 @@ namespace WebDaD.Toolkit.Export
                 {
                     file.WriteLine("<div id=\"afterContent\">" + template.AfterContent + "</div>");
 
+                    file.WriteLine("<div id=\"footer\">");
                     if (template.Footer != null)
                     {
-                        file.WriteLine("<div id=\"footer_full\">" + template.Footer.Replace(Template.IMAGE_TAG, "<img src=\"").Replace(Template.IMAGE_END, "\"/>").Replace(Template.LINEBREAK, "<br/>").Replace(Template.FULLSTARTER, "") + "</div>");
+                        file.WriteLine(htmlTags(template.Footer, basepath + Path.DirectorySeparatorChar + "vorlagen" + Path.DirectorySeparatorChar + template.NiceID).Replace(Template.FULLSTARTER, ""));
                     }
                     else
                     {
-                        file.WriteLine("<div id=\"footer\">");
-                        file.WriteLine("<div id=\"footer_left\">" + template.Footer_Left.Replace(Template.IMAGE_TAG, "<img src=\"").Replace(Template.IMAGE_END, "\"/>") + "</div>");
-                        file.WriteLine("<div id=\"footer_center\">" + template.Footer_Center.Replace(Template.IMAGE_TAG, "<img src=\"").Replace(Template.IMAGE_END, "\"/>") + "</div>");
-                        file.WriteLine("<div id=\"footer_right\">" + template.Footer_Right.Replace(Template.IMAGE_TAG, "<img src=\"").Replace(Template.IMAGE_END, "\"/>") + "</div>");
-                        file.WriteLine("</div>");
+
+                        file.WriteLine("<div class=\"left\">" + htmlTags(template.Footer_Left, basepath + Path.DirectorySeparatorChar + "vorlagen" + Path.DirectorySeparatorChar + template.NiceID) + "</div>");
+                        file.WriteLine("<div class=\"center\">" + htmlTags(template.Footer_Center, basepath + Path.DirectorySeparatorChar + "vorlagen" + Path.DirectorySeparatorChar + template.NiceID) + "</div>");
+                        file.WriteLine("<div class=\"right\">" + htmlTags(template.Footer_Right, basepath + Path.DirectorySeparatorChar + "vorlagen" + Path.DirectorySeparatorChar + template.NiceID) + "</div>");
+                        
                     }
+                    file.WriteLine("</div>");
                 }
+                file.WriteLine("</div>");
                 file.WriteLine("</body>");
                 file.WriteLine("</html>");
             }
             return path;
         }
 
+        private static string htmlTags(string input, string templatePath)
+        {
+            string pattern = @"("+Template.IMAGE_TAG+"(.*?)"+Template.IMAGE_END+")";
+            Regex regex = new Regex(pattern, RegexOptions.Singleline);
+            MatchCollection matches = regex.Matches(input);
+            foreach (Match match in matches)
+            {
+                string m = match.Groups[2].Value;
+                input = input.Replace(m, imgToBase64(templatePath+Path.DirectorySeparatorChar+"images"+Path.DirectorySeparatorChar+m));
+            }
+            input = input.Replace(Template.IMAGE_TAG, "<img src=\"");
+            input = input.Replace(Template.IMAGE_END, "\"/>");
+            input = input.Replace(Template.LINEBREAK, "<br/>");
+            return input;
+        }
+        private static string imgToBase64(string image)
+        {
+            System.Drawing.Image img = System.Drawing.Image.FromFile(image);
+            using (MemoryStream ms = new MemoryStream())
+            {
+                // Convert Image to byte[]
+                img.Save(ms, img.RawFormat);
+                byte[] imageBytes = ms.ToArray();
+
+                // Convert byte[] to Base64 String
+                string base64String = Convert.ToBase64String(imageBytes);
+                return "data:image/png;base64,"+base64String;
+            }
+        }
         private static List<string> getCSS(string file)
         {
             List<string> c = new List<string>();
