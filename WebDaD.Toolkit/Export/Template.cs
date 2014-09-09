@@ -41,23 +41,23 @@ namespace WebDaD.Toolkit.Export
 
         public static string ReplacePlaceholder(string origin, string id, string addr, string worker, string datecreate, string datesecond)
         {
-            if(!String.IsNullOrEmpty(addr))
-                origin = origin.Replace(ADDR, "Adresse: "+LINEBREAK+addr.Replace("\n",LINEBREAK));
+            if (!String.IsNullOrEmpty(addr))
+                origin = origin.Replace(ADDR, "Adresse: " + LINEBREAK + addr.Replace("\n", LINEBREAK));
             else
                 origin = origin.Replace(ADDR, "");
 
             if (!String.IsNullOrEmpty(id))
-                origin = origin.Replace(OBJECT_ID, "ID: "+id);
+                origin = origin.Replace(OBJECT_ID, "ID: " + id);
             else
                 origin = origin.Replace(OBJECT_ID, "");
 
             if (!String.IsNullOrEmpty(worker))
-                origin = origin.Replace(WORKER, "Mitarbeiter: "+worker);
+                origin = origin.Replace(WORKER, "Mitarbeiter: " + worker);
             else
                 origin = origin.Replace(WORKER, "");
 
             if (!String.IsNullOrEmpty(datecreate))
-                origin = origin.Replace(DATE_CREATE, "Datum: "+datecreate);
+                origin = origin.Replace(DATE_CREATE, "Datum: " + datecreate);
             else
                 origin = origin.Replace(DATE_CREATE, "");
 
@@ -71,7 +71,7 @@ namespace WebDaD.Toolkit.Export
 
         public static Dictionary<string, string> getTemplates(WebDaD.Toolkit.Database.Database db)
         {
-            WebDaD.Toolkit.Database.Result d = db.getRow(Template.table, new string[] { "id", "name" },"","");
+            WebDaD.Toolkit.Database.Result d = db.getRow(Template.table, new string[] { "id", "name" }, "", "");
 
             Dictionary<string, string> r = new Dictionary<string, string>();
 
@@ -79,7 +79,7 @@ namespace WebDaD.Toolkit.Export
 
             foreach (WebDaD.Toolkit.Database.Row item in d.Rows)
             {
-                r.Add(item.Cells["id"],item.Cells["name"]);
+                r.Add(item.Cells["id"], item.Cells["name"]);
             }
 
             if (d.RowCount > 0) return r;
@@ -89,6 +89,8 @@ namespace WebDaD.Toolkit.Export
         private static string table = "templates";
 
         private WebDaD.Toolkit.Database.Database db;
+
+        private string basePath;
 
         private string id;
         public string ID { get { return id; } set { id = value; } }
@@ -128,11 +130,12 @@ namespace WebDaD.Toolkit.Export
             }
         }
         private string header;
-        public string Header {
+        public string Header
+        {
             get { if (this.header.StartsWith(Template.FULLSTARTER))return Header_Left; else return null; }
             set
             {
-                this.header = Template.FULLSTARTER+value;
+                this.header = Template.FULLSTARTER + value;
             }
         }
         public string Header_Left
@@ -218,34 +221,19 @@ namespace WebDaD.Toolkit.Export
             }
         }
 
-        private Dictionary<string, string> cssDic;
-        private string dbCSS { get {
-            string r = "";
-            foreach (KeyValuePair<string,string> item in this.cssDic)
-            {
-                r += item.Key + ":" + item.Value + "|";
-            }
-            r = r.Remove(r.Length - 1);
-            return r;
-        
-        } }
-        public Dictionary<string, string> CSS
+        public string CSS_HTML
         {
-            get { return this.cssDic; }
+            get
+            {
+                return this.basePath + Path.DirectorySeparatorChar + "html.css";
+            }
         }
-        private Dictionary<string, string> createDic(string css_string)
+        public string CSS_PDF
         {
-            Dictionary<string, string> c = new Dictionary<string, string>();
-            if (css_string.Contains('|'))
+            get
             {
-                foreach (string item in css_string.Split('|'))
-                {
-                    string[] tmp = item.Split(':');
-                    c.Add(tmp[0], tmp[1]);
-                }
+                return this.basePath + Path.DirectorySeparatorChar + "pdf.css";
             }
-
-            return c;
         }
         public Dictionary<string, string> FieldSet
         {
@@ -258,17 +246,16 @@ namespace WebDaD.Toolkit.Export
                 r.Add("textBefore", this.textBefore);
                 r.Add("header", this.header);
                 r.Add("footer", this.footer);
-                r.Add("css", this.dbCSS);
                 return r;
             }
         }
 
         private bool empty;
 
-        public Template(WebDaD.Toolkit.Database.Database db, string id)
+        public Template(WebDaD.Toolkit.Database.Database db, string id, string basePath)
         {
             this.db = db;
-            WebDaD.Toolkit.Database.Result d = this.db.getRow(Template.table, new string[] { "id", "name", "beforeContent", "afterContent","textBefore", "header", "footer","css" }, "`id`='" + id + "'", "", 1);
+            WebDaD.Toolkit.Database.Result d = this.db.getRow(Template.table, new string[] { "id", "name", "beforeContent", "afterContent", "textBefore", "header", "footer" }, "`id`='" + id + "'", "", 1);
             this.id = d.FirstRow["id"];
             this.name = d.FirstRow["name"];
             this.beforeContent = d.FirstRow["beforeContent"];
@@ -276,13 +263,13 @@ namespace WebDaD.Toolkit.Export
             this.textBefore = d.FirstRow["textBefore"];
             this.header = d.FirstRow["header"];
             this.footer = d.FirstRow["footer"];
-            this.cssDic = createDic(d.FirstRow["css"]);
             this.empty = false;
+            this.basePath = basePath + Path.DirectorySeparatorChar + NiceID + Path.DirectorySeparatorChar;
         }
 
-        
 
-        public Template(WebDaD.Toolkit.Database.Database db)
+
+        public Template(WebDaD.Toolkit.Database.Database db, string basePath)
         {
             this.db = db;
             this.name = "";
@@ -291,8 +278,8 @@ namespace WebDaD.Toolkit.Export
             this.textBefore = "|";
             this.header = " | | ";
             this.footer = " | | ";
-            this.cssDic = new Dictionary<string,string>();
             this.empty = true;
+            this.basePath = basePath + Path.DirectorySeparatorChar + NiceID + Path.DirectorySeparatorChar;
         }
 
         public Template()
@@ -303,8 +290,8 @@ namespace WebDaD.Toolkit.Export
             this.textBefore = "";
             this.header = "";
             this.footer = "";
-            this.cssDic = new Dictionary<string, string>();
             this.empty = true;
+            this.basePath = "";
         }
 
         public bool IsEmpty { get { return this.empty; } }
@@ -314,7 +301,7 @@ namespace WebDaD.Toolkit.Export
         /// </summary>
         /// <param name="images">A List of images to be force-copied</param>
         /// <returns>if all went good</returns>
-        public bool Save(List<string> images, string path)
+        public bool Save(List<string> images)
         {
             bool ok = true;
             if (String.IsNullOrEmpty(this.id))
@@ -328,11 +315,15 @@ namespace WebDaD.Toolkit.Export
             }
             if (ok)
             {
-                if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+                string imgPath = this.basePath + Path.DirectorySeparatorChar + "images";
+                if (!Directory.Exists(imgPath)) Directory.CreateDirectory(imgPath);
                 foreach (string img in images)
                 {
-                    File.Copy(img, path + Path.DirectorySeparatorChar + Path.GetFileName(img),true);
+                    File.Copy(img, imgPath + Path.DirectorySeparatorChar + Path.GetFileName(img), true);
                 }
+                string baseFolder = Directory.GetParent(this.basePath).ToString();
+                File.Copy(baseFolder + Path.DirectorySeparatorChar + "html.css", basePath + Path.DirectorySeparatorChar + "html.css");
+                File.Copy(baseFolder + Path.DirectorySeparatorChar + "pdf.css", basePath + Path.DirectorySeparatorChar + "pdf.css");
             }
 
             return ok;
@@ -342,7 +333,7 @@ namespace WebDaD.Toolkit.Export
             get
             {
                 string r = "T%ID5%";
-               
+
 
                 string reg_ID = @"%ID(\d+)%";
                 string count = "";
@@ -353,7 +344,7 @@ namespace WebDaD.Toolkit.Export
                     Group g = m.Groups[1];
                     count = g.ToString();
                     int c = Int32.Parse(count);
-                    r = r.Replace("%ID" + count + "%", id.PadLeft(c, '0'));
+                    r = r.Replace("%ID" + count + "%", this.id.PadLeft(c, '0'));
                 }
 
 
@@ -365,7 +356,7 @@ namespace WebDaD.Toolkit.Export
         {
             bool ok = true;
 
-            ok = db.Execute("DELETE FROM "+Template.table+" WHERE `id`="+this.id);
+            ok = db.Execute("DELETE FROM " + Template.table + " WHERE `id`=" + this.id);
             return ok;
         }
     }

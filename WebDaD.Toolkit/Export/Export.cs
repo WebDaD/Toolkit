@@ -93,7 +93,7 @@ namespace WebDaD.Toolkit.Export
                 file.WriteLine("<head>");
                 file.WriteLine("<title>" + title + "</title>");
                 file.WriteLine("<style>");
-                foreach (string line in getCSS(basepath + Path.DirectorySeparatorChar + "vorlagen" + Path.DirectorySeparatorChar + template.CSS["html"]))
+                foreach (string line in getCSS(basepath + Path.DirectorySeparatorChar + "vorlagen" + Path.DirectorySeparatorChar + template.CSS_HTML))
                 {
                     file.WriteLine(line);
                 }
