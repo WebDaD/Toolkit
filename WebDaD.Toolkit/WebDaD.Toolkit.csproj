@@ -116,6 +116,7 @@
     <Compile Include="Database\Row.cs" />
     <Compile Include="Database\SQLite.cs" />
     <Compile Include="Database\Joinable.cs" />
+    <Compile Include="Database\Table.cs" />
     <Compile Include="Export\Content.cs" />
     <Compile Include="Export\ContentParagraphs.cs" />
     <Compile Include="Export\ContentTable.cs" />

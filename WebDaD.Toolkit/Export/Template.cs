@@ -38,6 +38,7 @@ namespace WebDaD.Toolkit.Export
         public static readonly string WORKER = "%WORKER%";
         public static readonly string DATE_CREATE = "%DATE_CREATE%";
         public static readonly string DATE_SECOND = "%DATE_SECOND%";
+        public static readonly string DATE_NOW = "%DATE_NOW%";
 
         public static string ReplacePlaceholder(string origin, string id, string addr, string worker, string datecreate, string datesecond)
         {
@@ -65,6 +66,8 @@ namespace WebDaD.Toolkit.Export
                 origin = origin.Replace(DATE_SECOND, datesecond); //Already contains LABEL!
             else
                 origin = origin.Replace(DATE_SECOND, "");
+
+            
 
             return origin;
         }

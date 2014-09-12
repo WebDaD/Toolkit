@@ -108,14 +108,14 @@ namespace WebDaD.Toolkit.Export
                     file.WriteLine("<div id=\"header\">");
                     if (template.Header != null)
                     {
-                        file.WriteLine(htmlTags(template.Header, basepath + Path.DirectorySeparatorChar + "vorlagen" + Path.DirectorySeparatorChar + template.NiceID).Replace(Template.FULLSTARTER, ""));
+                        file.WriteLine(htmlTags(template.Header, basepath + Path.DirectorySeparatorChar + "vorlagen" + Path.DirectorySeparatorChar + template.NiceID).Replace(Template.FULLSTARTER, "").Replace(Template.DATE_NOW, DateTime.Now.ToString("dd.MM.yyyy")));
                     }
                     else
                     {
 
-                        file.WriteLine("<div class=\"left\">" + htmlTags(template.Header_Left, basepath + Path.DirectorySeparatorChar + "vorlagen" + Path.DirectorySeparatorChar + template.NiceID) + "</div>");
-                        file.WriteLine("<div class=\"center\">" + htmlTags(template.Header_Center, basepath + Path.DirectorySeparatorChar + "vorlagen" + Path.DirectorySeparatorChar + template.NiceID) + "</div>");
-                        file.WriteLine("<div class=\"right\">" + htmlTags(template.Header_Right, basepath + Path.DirectorySeparatorChar + "vorlagen" + Path.DirectorySeparatorChar + template.NiceID) + "</div>");
+                        file.WriteLine("<div class=\"left\">" + htmlTags(template.Header_Left, basepath + Path.DirectorySeparatorChar + "vorlagen" + Path.DirectorySeparatorChar + template.NiceID).Replace(Template.DATE_NOW, DateTime.Now.ToString("dd.MM.yyyy")) + "</div>");
+                        file.WriteLine("<div class=\"center\">" + htmlTags(template.Header_Center, basepath + Path.DirectorySeparatorChar + "vorlagen" + Path.DirectorySeparatorChar + template.NiceID).Replace(Template.DATE_NOW, DateTime.Now.ToString("dd.MM.yyyy")) + "</div>");
+                        file.WriteLine("<div class=\"right\">" + htmlTags(template.Header_Right, basepath + Path.DirectorySeparatorChar + "vorlagen" + Path.DirectorySeparatorChar + template.NiceID).Replace(Template.DATE_NOW, DateTime.Now.ToString("dd.MM.yyyy")) + "</div>");
                         
                     }
                     file.WriteLine("</div>");
@@ -184,14 +184,14 @@ namespace WebDaD.Toolkit.Export
                     file.WriteLine("<div id=\"footer\">");
                     if (template.Footer != null)
                     {
-                        file.WriteLine(htmlTags(template.Footer, basepath + Path.DirectorySeparatorChar + "vorlagen" + Path.DirectorySeparatorChar + template.NiceID).Replace(Template.FULLSTARTER, ""));
+                        file.WriteLine(htmlTags(template.Footer, basepath + Path.DirectorySeparatorChar + "vorlagen" + Path.DirectorySeparatorChar + template.NiceID).Replace(Template.FULLSTARTER, "").Replace(Template.DATE_NOW, DateTime.Now.ToString("dd.MM.yyyy")));
                     }
                     else
                     {
 
-                        file.WriteLine("<div class=\"left\">" + htmlTags(template.Footer_Left, basepath + Path.DirectorySeparatorChar + "vorlagen" + Path.DirectorySeparatorChar + template.NiceID) + "</div>");
-                        file.WriteLine("<div class=\"center\">" + htmlTags(template.Footer_Center, basepath + Path.DirectorySeparatorChar + "vorlagen" + Path.DirectorySeparatorChar + template.NiceID) + "</div>");
-                        file.WriteLine("<div class=\"right\">" + htmlTags(template.Footer_Right, basepath + Path.DirectorySeparatorChar + "vorlagen" + Path.DirectorySeparatorChar + template.NiceID) + "</div>");
+                        file.WriteLine("<div class=\"left\">" + htmlTags(template.Footer_Left, basepath + Path.DirectorySeparatorChar + "vorlagen" + Path.DirectorySeparatorChar + template.NiceID).Replace(Template.DATE_NOW, DateTime.Now.ToString("dd.MM.yyyy")) + "</div>");
+                        file.WriteLine("<div class=\"center\">" + htmlTags(template.Footer_Center, basepath + Path.DirectorySeparatorChar + "vorlagen" + Path.DirectorySeparatorChar + template.NiceID).Replace(Template.DATE_NOW, DateTime.Now.ToString("dd.MM.yyyy")) + "</div>");
+                        file.WriteLine("<div class=\"right\">" + htmlTags(template.Footer_Right, basepath + Path.DirectorySeparatorChar + "vorlagen" + Path.DirectorySeparatorChar + template.NiceID).Replace(Template.DATE_NOW, DateTime.Now.ToString("dd.MM.yyyy")) + "</div>");
                         
                     }
                     file.WriteLine("</div>");
@@ -261,11 +261,11 @@ namespace WebDaD.Toolkit.Export
                 {
                     if (template.Header != null)
                     {
-                        file.WriteLine(template.Header.Replace(Template.IMAGE_TAG, "<").Replace(Template.IMAGE_END, ">").Replace(Template.LINEBREAK, "\n").Replace(Template.FULLSTARTER, ""));
+                        file.WriteLine(template.Header.Replace(Template.IMAGE_TAG, "<").Replace(Template.IMAGE_END, ">").Replace(Template.LINEBREAK, "\n").Replace(Template.FULLSTARTER, "").Replace(Template.DATE_NOW, DateTime.Now.ToString("dd.MM.yyyy")));
                     }
                     else
                     {
-                        file.WriteLine(template.Header_Left + Template.TAB + Template.TAB + template.Header_Center + Template.TAB + Template.TAB + template.Header_Right);
+                        file.WriteLine(template.Header_Left.Replace(Template.DATE_NOW, DateTime.Now.ToString("dd.MM.yyyy")) + Template.TAB + Template.TAB + template.Header_Center.Replace(Template.DATE_NOW, DateTime.Now.ToString("dd.MM.yyyy")) + Template.TAB + Template.TAB + template.Header_Right.Replace(Template.DATE_NOW, DateTime.Now.ToString("dd.MM.yyyy")));
                     }
                     file.WriteLine("");
 
@@ -373,11 +373,11 @@ namespace WebDaD.Toolkit.Export
                     file.WriteLine("");
                     if (template.Footer != null)
                     {
-                        file.WriteLine(template.Footer.Replace(Template.IMAGE_TAG, "<").Replace(Template.IMAGE_END, ">").Replace(Template.LINEBREAK, "\n").Replace(Template.FULLSTARTER, ""));
+                        file.WriteLine(template.Footer.Replace(Template.IMAGE_TAG, "<").Replace(Template.IMAGE_END, ">").Replace(Template.LINEBREAK, "\n").Replace(Template.FULLSTARTER, "").Replace(Template.DATE_NOW, DateTime.Now.ToString("dd.MM.yyyy")));
                     }
                     else
                     {
-                        file.WriteLine(template.Footer_Left + Template.TAB + Template.TAB + template.Footer_Center + Template.TAB + Template.TAB + template.Footer_Right);
+                        file.WriteLine(template.Footer_Left.Replace(Template.DATE_NOW, DateTime.Now.ToString("dd.MM.yyyy")) + Template.TAB + Template.TAB + template.Footer_Center.Replace(Template.DATE_NOW, DateTime.Now.ToString("dd.MM.yyyy")) + Template.TAB + Template.TAB + template.Footer_Right.Replace(Template.DATE_NOW, DateTime.Now.ToString("dd.MM.yyyy")));
                     }
                 }
             }
