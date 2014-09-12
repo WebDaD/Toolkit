@@ -20,8 +20,19 @@ namespace WebDaD.Toolkit.Database
         bool Execute(string sql);
         string GetLastInsertedID();
         bool isOpen();
+
+        /// <summary>
+        /// Checks, if the Database contains the necessary Tables
+        /// </summary>
+        /// <param name="tables">A List of Table-Objects to Check</param>
+        /// <returns>True or False</returns>
+        bool isValid(List<Table> tables);
         Result Select(string sql);
         bool CreateTable(string table, Dictionary<string, FieldType> fields,string primary_field);
+
+        bool CreateTable(Table table);
+
+        Table GetTable(string name);
         Result Join(Joinable[] tables, Condition[] c, GroupBy g, OrderBy[] o);
         /// <summary>
         /// Dumps the Database into a Single restorable File

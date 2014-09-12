@@ -13,6 +13,7 @@ namespace WebDaD.Toolkit.Database
         Date,
         DateTime,
         Integer,
-        PrimaryInteger
+        PrimaryInteger,
+        Float
     }
 }

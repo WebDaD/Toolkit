@@ -18,7 +18,16 @@ namespace WebDaD.Toolkit.Database
 
         private MySqlConnection connection;
         private MySqlCommand cmd;
-
+        public bool isValid(List<Table> tables)
+        {
+            bool c = true;
+            foreach (Table t in tables)
+            {
+                c = t.CompareWith(this);
+                if (!c) break;
+            }
+            return c;
+        }
         public static String GetConnectionString(string server, string database,string user, string password)
         {
             return "Server="+server+";Database="+database+";Uid="+user+";Pwd="+password+";";
@@ -350,6 +359,23 @@ namespace WebDaD.Toolkit.Database
 
             return this.Execute(sql);
         }
+        public bool CreateTable(Table table)
+        {
+            string sql = "CREATE TABLE IF NOT EXISTS " + table.Name + " (";
+            foreach (KeyValuePair<string, FieldType> item in table.Fields)
+            {
+                sql += item.Key + " " + ft2String(item.Value);
+                if (item.Key == table.PrimaryKey)
+                {
+                    sql += " PRIMARY KEY";
+                }
+                sql += ", ";
+            }
+            sql = sql.Remove(sql.Length - 1);
+            sql += ")";
+
+            return this.Execute(sql);
+        }
 
         public Result Join(Joinable[] tables, Condition[] c, GroupBy g, OrderBy[] o)
         {
@@ -449,7 +475,35 @@ namespace WebDaD.Toolkit.Database
             }
             return true;
         }
+        public Table GetTable(string name)
+        {
+            Table t = new Table(name);
+            Result r = Select("DESCRIBE " + name + "");
+            foreach (Row item in r.Rows)
+            {
+                string fname = item.Cells["Field"];
+                FieldType ftype = string2ft(item.Cells["Type"]);
+                t.AddField(fname, ftype);
+                if (item.Cells["Key"] == "PRI") t.SetPrimaryKey(fname);
+            }
 
+            return t;
+        }
+
+        private FieldType string2ft(string field)
+        {
+            switch (field)
+            {
+                case "TEXT": return FieldType.String;
+                case "VARCHAR(100)": return FieldType.ShortString;
+                case "DATE": return FieldType.Date;
+                case "DATETIME": return FieldType.DateTime;
+                case "INT(11)": return FieldType.Integer;
+                case "INTEGER NOT NULL AUTO_INCREMENT": return FieldType.PrimaryInteger;
+                case "DOUBLE": return FieldType.Float;
+                default: return FieldType.String;//TODO: Error
+            }
+        }
         private string ft2String(FieldType p)
         {
             switch (p)
@@ -459,6 +513,7 @@ namespace WebDaD.Toolkit.Database
                 case FieldType.Date: return "DATE";
                 case FieldType.DateTime: return "DATETIME";
                 case FieldType.Integer: return "INT(11)";
+                case FieldType.Float: return "DOUBLE";
                 case FieldType.PrimaryInteger: return "INT(11) NOT NULL AUTO_INCREMENT";//TODO: check with file
                 default://TODO: ERROR
                     break;

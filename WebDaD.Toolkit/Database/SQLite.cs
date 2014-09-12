@@ -15,6 +15,17 @@ namespace WebDaD.Toolkit.Database
         private SQLiteConnection connection;
         private SQLiteCommand cmd;
 
+        public bool isValid(List<Table> tables)
+        {
+            bool c = true;
+            foreach (Table t in tables)
+            {
+                c = t.CompareWith(this);
+                if (!c) break;
+            }
+            return c;
+        }
+
         public static String GetConnectionString(string datasource)
         {
             return "Data Source=" + datasource;
@@ -236,7 +247,49 @@ namespace WebDaD.Toolkit.Database
 
             return this.Execute(sql);
         }
+        public bool CreateTable(Table table)
+        {
+            string sql = "CREATE TABLE IF NOT EXISTS " + table.Name + " (";
+            foreach (KeyValuePair<string, FieldType> item in table.Fields)
+            {
+                sql += item.Key + " " + ft2String(item.Value);
+                if (item.Key == table.PrimaryKey)
+                {
+                    sql += " PRIMARY KEY";
+                }
+                sql += ", ";
+            }
+            sql = sql.Remove(sql.Length - 1);
+            sql += ")";
 
+            return this.Execute(sql);
+        }
+        public Table GetTable(string name)
+        {
+            Table t = new Table(name);
+            Result r = Select("PRAGMA table_info(" + name + ")");
+            foreach (Row item in r.Rows)
+            {
+                string fname = item.Cells["name"];
+                FieldType ftype = string2ft(item.Cells["type"]);
+                t.AddField(fname, ftype);
+                if (item.Cells["pk"] == "1") t.SetPrimaryKey(fname);
+            }
+
+            return t;
+        }
+
+        private FieldType string2ft(string field)
+        {
+            switch(field)
+            {
+                case "TEXT": return FieldType.String;
+                case "NUMBER": return FieldType.Integer;
+                case "INTEGER NOT NULL AUTO_INCREMENT": return FieldType.PrimaryInteger;
+                case "REAL": return FieldType.Float;
+                default: return FieldType.String;//TODO: Error
+            }
+        }
         private string ft2String(FieldType p)
         {
             switch (p)
@@ -247,10 +300,10 @@ namespace WebDaD.Toolkit.Database
                 case FieldType.DateTime: return "TEXT";
                 case FieldType.Integer: return "NUMBER";
                 case FieldType.PrimaryInteger: return "INTEGER NOT NULL AUTO_INCREMENT";//TODO: check with file
+                case FieldType.Float: return "REAL";
                 default://TODO: ERROR
-                    break;
+                    return null;
             }
-            throw new NotImplementedException();
         }
 
         public Result getRow(string table, string[] fields, Condition[] c = null, GroupBy g = null, OrderBy[] o = null, int limit = 0)
