@@ -64,6 +64,7 @@ namespace WebDaD.Toolkit.Licensing
         /// <returns></returns>
         public static bool IsLicensed(string app,string user, string encrypted_hash)
         {
+            return true;
             //use public key to decrypt encrypted_hash and compare user and app
             //app|user
             throw new NotImplementedException();
